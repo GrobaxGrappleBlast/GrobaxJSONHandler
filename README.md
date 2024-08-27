@@ -1,20 +1,111 @@
-# grobax-ttrpg-system
-Welcome to Grobax TTRPG System. 
+# grobax-JSONHandler
+This is a Project to help serializing and deserializing JSON.
+With this you are able to design different schemes for your Objects, different schemes to be serialized into and deserialized from.
+ensure that you have enabled experimental decorators 
 
-This is a plugin for obsidianMD, where the user gets to design their very own, Tabletop Role-Playing Game (TTRPG). This system will then create an object for that system, and launch a View for that system on a .md page using data written inside the ```grobax-(MySystemCodeName) ``` block. This view will have the capability to read, update, and save the block's data. 
+## Schemes 
+A scheme is a name, that the decorater wil register the property decorator to.
+if no shceme is provided the scheme is 'BASE_SCHEME'
+if a property is registered for one theme and you serialize as another, you will not see the properties registered for teh other schemes
 
-## Features 
-- *Dynamic environment creation* you will be able to launch your environment and render custom UI views. This can aid you in taking notes about TTPRPG characters, npc's, and other standard statblocks.
+### child objects.
+If there are child objects, the Handler will try to serialize them with the same scheme as the parent 
+**future versions should be able to define what child schemes are chosen */
 
-- *Custom TTPRPG Design* You can design a TTPRPG system from scratch. you get to design derived and fixed values. Fixed values being those values that should be saved inside the View's block data. derived is that data wich is derived from other data ( Derived or fixed ).
+## Decorators 
 
-- *Create Custom Views* This app allows you to create a Custom UI Template for a system, eks Create a new alternative View for DnD characters. you can export a development .ts class that represent a given environment, and create and compile a UI for that and upload it as a ui template for that system. Then in your block data  you specify the template using it's code name, and then your node will use your new View.
+/**
+	This is a generic JsonProperty. This is used by other decorators. 
+	with this decorator you have access to decorate every function as you see fit. 
 
-## Getting started. 
-This app is not finished yet. stil in early development. 
+	But it is recomended to use more specifik decorators.
+*/
+@JsonProperty		( option?:JSONInnerPropertyOptions<any,any> )
+
+/**
+	This is a generic JsonProperty. 
+	This decorator forces its result to be an array. 
+*/
+@JsonArrayProperty	( option?:JSONPropertyOptions )
+
+/**
+	This is a basetype JsonProperty that forces it self to be a number; 
+*/
+@JsonNumber			( option?:JSONPropertyOptions )
+/**
+	This is a basetype JsonProperty that forces it self to be a string; 
+*/
+@JsonString			( option?:JSONPropertyOptions )
+/**
+	This is a basetype JsonProperty that forces it self to be a boolean; 
+*/
+@JsonBoolean		( option?:JSONPropertyOptions )
+/**
+	This is a basetype JsonProperty that forces it self to be a class instance.
+	it does this, by assuring it is an object, and then moving instance data to and from it.  
+
+
+	*When deserializing, it uses the constructor passed to create the instance* 
+*/
+@JsonClassTyped		( type : Constructor<T> , option?:JSONPropertyOptions )
 
 
 
+/**
+	This is a basetype JsonProperty that forces it self to be  an array of numbers;
+*/
+@JsonArrayNumber	( option?:JSONPropertyOptions )
 
+/**
+	This is a basetype JsonProperty that forces it self to be an array of string;
+*/
+@JsonArrayString	( option?:JSONPropertyOptions )
 
+/**
+	This is a basetype JsonProperty that forces it self to be an array of booleans;
+*/
+@JsonArrayBoolean	( option?:JSONPropertyOptions )
+
+/**
+	This is a basetype JsonProperty that forces it self to be an array of class instances;
+
+	*When deserializing, it uses the constructor passed to create the instance* 
+*/
+@JsonArrayClassTyped( type : Constructor<T> , option?:JSONPropertyOptions )
+
+### parameters 
+
+export interface JSONPropertyOptions {
+	scheme?:string	, // what scheme to use 
+	name?: string 	, // a replacement name, when going out and comming in. 
+	isArray?:boolean  // should it convert this to an array?
+}
+interface JSONInnerPropertyOptions<IN extends object,OUT extends object> extends JSONPropertyOptions{
+	mappingFunctions? :{ out:( t:IN , serialize?:any ) => OUT , in:( b:OUT, deserialize?:any ) => IN } , // advanced going in out methods, 
+	type?: any,			// if it should try to force it to a type ( class )
+	forceBaseType?:  	// if it tries to force it into a string, boolean or number
+}
+
+## Special Decorators 
+
+### Mapping Decorator
+/**
+	this is a special decorator to help design a property that is mapped in and mapped out
+*/
+JsonMapping<IN extends object,OUT extends object>( params : JsonMappingParameters<IN,OUT> )
+
+#### mapping paramenters
+interface JsonMappingParameters<IN extends object,OUT extends object>{
+	scheme?:string, 
+	inFunction:( b:OUT, deserialize?:any ) => IN,	// the function is takes comming in
+	outFunction:( t:IN , serialize?:any ) => OUT ,	// the function it takes going out.
+	type? : Constructor<IN>,
+	option? : JSONInnerPropertyOptions<IN,OUT>
+}
+
+### RecordInArrayOut
+this is a special decorator designed to ease the creation of a parameter that is a record inside the program, but serialized out to an array.
+
+JsonMappingRecordInArrayOut<IN extends object,OUT extends object>( option : specialRecordArrayMappingProperties<IN,OUT> )
+JsonObject( option : JsonObjectProperties)
 

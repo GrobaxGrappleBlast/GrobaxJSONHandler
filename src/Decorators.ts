@@ -18,17 +18,33 @@ function cleanNonAccesibleSettings( option?:JSONPropertyOptions ){
 }
 
 export interface JSONPropertyOptions {
-	scheme?:string,
-	name?: string ,
-	isArray?:boolean
+	/**what scheme this property belongs to */
+	scheme?:string, 
+	
+	/** what name its going out as and coming in as */
+	name?: string ,	
+
+	/**if this should be forced to an array */
+	isArray?:boolean 
 }
 interface JSONInnerPropertyOptions<IN extends object,OUT extends object> extends JSONPropertyOptions{
-	scheme?:string,
+	
+	/**method to run on out and in. */
 	mappingFunctions? :{ out:( t:IN , serialize?:any ) => OUT , in:( b:OUT, deserialize?:any ) => IN } , 
-	type?: any,
-	forceBaseType?: false | keyof typeof JSON_BASETYPES
+	
+	/**if this should force the type (class) */
+	type?: any, 
+	
+	/**if it should force the value to be a string|number|boolean */
+	forceBaseType?: false | keyof typeof JSON_BASETYPES 
+
 }
 
+
+/**
+ * This is the base property, this is the property that other properties use.
+ * it is recommended that you use the more specifik properties when possible
+*/
 export function JsonProperty( option?:JSONInnerPropertyOptions<any,any> ) { 
 
 	return function (target: any, propertyKey: string ) {
@@ -68,51 +84,92 @@ export function JsonProperty( option?:JSONInnerPropertyOptions<any,any> ) {
 		
 	};
 } 
+
+/**
+ * This is the base property, that ensure what ever is deserialized|serialized is an array
+*/
 export function JsonArrayProperty	( option?:JSONPropertyOptions ){
 	option = cleanNonAccesibleSettings(option); 
 	( option as JSONInnerPropertyOptions<any,any>).isArray 		 = true;
 	return JsonProperty(option);
 }
 
+/**
+ * This is a property that converts to a number
+ */
 export function JsonNumber	( option?:JSONPropertyOptions ){
 	option = cleanNonAccesibleSettings(option);
 	( option as JSONInnerPropertyOptions<any,any>).forceBaseType = JSON_BASETYPES.number
 	return JsonProperty(option);
 }
+
+
+/**
+ * This is a property that converts to a string
+ */
 export function JsonString	( option?:JSONPropertyOptions ){
 	option = cleanNonAccesibleSettings(option);
 	( option as JSONInnerPropertyOptions<any,any>).forceBaseType = JSON_BASETYPES.string
 	return JsonProperty(option);
 }
+
+
+/**
+ * This is a property that converts to a boolean
+ */
 export function JsonBoolean	( option?:JSONPropertyOptions ){
 	option = cleanNonAccesibleSettings(option);
 	( option as JSONInnerPropertyOptions<any,any>).forceBaseType = JSON_BASETYPES.bool
 	return JsonProperty(option);
 }
+
+
+/**
+ * This is a property that converts to a class instance,
+ * when deserilizing it will be created through the constructor. 
+ * when serializign it will force it through the prototype.
+ */
 export function JsonClassTyped<T extends object>( type : Constructor<T> , option?:JSONPropertyOptions ){
 	option = cleanNonAccesibleSettings(option);
 	( option as JSONInnerPropertyOptions<any,any>).type 	= type;
 	return JsonProperty(option);
 }
 
+/**
+ * This is a property that converts to a number array
+ */
 export function JsonArrayNumber	( option?:JSONPropertyOptions ){
 	option = cleanNonAccesibleSettings(option);
 	( option as JSONInnerPropertyOptions<any,any>).forceBaseType = JSON_BASETYPES.number;
 	( option as JSONInnerPropertyOptions<any,any>).isArray 		 = true;
 	return JsonProperty(option);
 }
+
+/**
+ * This is a property that converts to a string array
+ */
 export function JsonArrayString	( option?:JSONPropertyOptions ){
 	option = cleanNonAccesibleSettings(option);
 	( option as JSONInnerPropertyOptions<any,any>).forceBaseType = JSON_BASETYPES.string;
 	( option as JSONInnerPropertyOptions<any,any>).isArray 		 = true;
 	return JsonProperty(option);
 }
+
+/**
+ * This is a property that converts to a boolean array
+ */
 export function JsonArrayBoolean	( option?:JSONPropertyOptions ){
 	option = cleanNonAccesibleSettings(option);
 	( option as JSONInnerPropertyOptions<any,any>).forceBaseType = JSON_BASETYPES.bool;
 	( option as JSONInnerPropertyOptions<any,any>).isArray 		 = true;
 	return JsonProperty(option);
 }
+
+/**
+ * This is a property that converts to a classinstance array
+ * when deserilizing it will be created through the constructor. 
+ * when serializign it will force it through the prototype.
+ */
 export function JsonArrayClassTyped<T extends object>( type : Constructor<T> , option?:JSONPropertyOptions ){
 	option = cleanNonAccesibleSettings(option);
 	( option as JSONInnerPropertyOptions<any,any>).isArray 		= true;
@@ -123,12 +180,25 @@ export function JsonArrayClassTyped<T extends object>( type : Constructor<T> , o
 
 // Mappings
 interface JsonMappingParameters<IN extends object,OUT extends object>{
+	
+	/**what scheme this belongs to */
 	scheme?:string, 
-	inFunction:( b:OUT, deserialize?:any ) => IN,
-	outFunction:( t:IN , serialize?:any ) => OUT ,
-	type? : Constructor<IN>,
-	option? : JSONInnerPropertyOptions<IN,OUT>
+
+	/**the function to operate the data, before going out */
+	inFunction:( b:OUT, deserialize?:any ) => IN, 
+
+	/** the function to operate the data, before going in */
+	outFunction:( t:IN , serialize?:any ) => OUT , 
+
+	/**if this should force the type (class) */
+	type? : Constructor<IN>, 
+	option? : JSONInnerPropertyOptions<IN,OUT> 
 }
+
+
+/**
+ * This is a property that helps ease mapping something in and out
+ */
 export function JsonMapping<IN extends object,OUT extends object>( params : JsonMappingParameters<IN,OUT> ){
 	// clean the input.
 	let option : JSONInnerPropertyOptions<IN,OUT> = cleanNonAccesibleSettings(params.option ?? ({} as JSONInnerPropertyOptions<IN,OUT>)) as JSONInnerPropertyOptions<IN,OUT>;
@@ -146,9 +216,21 @@ export function JsonMapping<IN extends object,OUT extends object>( params : Json
 }
 
 interface specialRecordArrayMappingProperties<IN extends object,OUT extends object> extends JSONInnerPropertyOptions<IN,OUT>{
+	
+	/**what scheme this belongs to */
 	scheme?:string,
+
+	/** 
+	 * what is the key on the object, that should be used as record key,
+	 * This can also be a method, but must be a method with no parameters 
+	 */
 	KeyPropertyName:string,
 }
+
+
+/**
+ * This is a property to ease the action of having a record in the system but an array in the json
+ */
 export function JsonMappingRecordInArrayOut<IN extends object,OUT extends object>( option : specialRecordArrayMappingProperties<IN,OUT> ){
 	// clean the input.
 	let type = option.type;
