@@ -1,6 +1,5 @@
-import "reflect-metadata"; 
-import type { Constructor } from "obsidian";
-import { BASE_SCHEME, JSON_BASETYPES, JSON_TAGS } from "./JsonModuleConstants";
+import "reflect-metadata";  
+import { BASE_SCHEME, JSON_BASETYPES, JSON_TAGS , Constructor } from "./JsonModuleConstants";
 import { setMetadata, setOwnMetaData } from "./JsonModuleBaseFunction";
 
 function cleanNonAccesibleSettings( option?:JSONPropertyOptions ){

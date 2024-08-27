@@ -1,4 +1,4 @@
-import type { IOutputHandler } from "../Designer/Abstractions/IOutputHandler";
+import type { IOutputHandler } from "./JsonModuleConstants";
 import { getMetadata, getOwnMetaData, getOwnMetaDataKeys, hasMetaDataInScheme } from "./JsonModuleBaseFunction";
 import { BASE_SCHEME, JSON_BASETYPES, JSON_TAGS, NoOutput, type Constructor } from "./JsonModuleConstants";
 

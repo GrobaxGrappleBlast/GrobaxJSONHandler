@@ -14,41 +14,42 @@ If there are child objects, the Handler will try to serialize them with the same
  
 ## Usage
 
-
+```js
 class MyClass{
 
-@JsonNumber({ name : 'c' })
-@JsonNumber({ name : 'firstNumber' , scheme:'testScheme'})
-public a = 12;
+	@JsonNumber({ name : 'c' })
+	@JsonNumber({ name : 'firstNumber' , scheme:'testScheme'})
+	public a = 12;
 
-@JsonArrayString ({ name : 'd' })
-public b = "12"
+	@JsonArrayString ({ name : 'd' })
+	public b = "12"
 }
+
 var obj = new MyClass();
 
 function serialize( obj ){
-let baseScheme = JSONHandler.serialize(obj);
-let testScheme = JSONHandler.serialize(obj, 'testScheme' );
+	let baseScheme = JSONHandler.serialize(obj);
+	let testScheme = JSONHandler.serialize(obj, 'testScheme' );
 
-console.log(`
-baseScheme
-**********
-${baseScheme}
-`)
+	console.log(`
+		baseScheme
+		**********
+		${baseScheme}
+	`)
 
-console.log(`
-testScheme
-**********
-${testScheme}
-`)
+	console.log(`
+		testScheme
+		**********
+		${testScheme}
+	`)
 }
 
 function derialize( json ){
-let object = JSONHandler.deserialize(MyClass, json);
-let testScheme = JSONHandler.deserialize(MyClass, json, scheme:'testScheme');
+	let object = JSONHandler.deserialize(MyClass, json);
+	let testScheme = JSONHandler.deserialize(MyClass, json, scheme:'testScheme');
 }
 
-
+```
 
 ## Member Decorators 
   

@@ -1,6 +1,10 @@
-import type { IOutputHandler } from "../Designer/Abstractions/IOutputHandler";
 
-export const BASE_SCHEME = '_base';
+export const BASE_SCHEME = '_base'; 
+export interface IOutputHandler {
+	outError(msg) 
+	outLog(msg) 
+}
+
 export const NoOutput : IOutputHandler = {
 	outError(msg) {},
 	outLog(msg) {}

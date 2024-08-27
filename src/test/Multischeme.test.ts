@@ -1,5 +1,4 @@
-import { JsonObject } from "../Decorators";
-import { JSONHandler, JsonProperty } from  "../index";
+import { JSONHandler, JsonObject,JsonProperty } from  "../index";
 
 @JsonObject({ 
 	onAfterDeSerialization:(self:Container2) => { 
