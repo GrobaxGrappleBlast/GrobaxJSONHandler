@@ -202,9 +202,21 @@ export class JSONHandler{
 			if ( meta.includes(JSON_TAGS.JSON_PROPERTY_NAME_MAP_IN ) ){
 				// get out key from the in Key
 				key = getMetadata( JSON_TAGS.JSON_PROPERTY_NAME_MAP_IN , prototype , key  , scheme ); 
+				// in case that a key belonged to another scheme, then the key is undefined
+				//	if(key==undefined){
+				//		continue;
+				//	}
 				meta = Reflect.getMetadataKeys( prototype , key );
 				PropertyName = key;
 			} 
+
+			// in case that this is a JSON property but ONLY for outgoing Not ingoing, then ignore it
+			//	else if (meta.includes(JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT)){
+			//		continue;
+			//	}
+
+			
+			
  
 			// Get the constructor if there is any, Generics take priority
 			let out : any = null; 

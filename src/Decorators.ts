@@ -1,4 +1,4 @@
-import "reflect-metadata";  
+
 import { BASE_SCHEME, JSON_BASETYPES, JSON_TAGS , Constructor } from "./JsonModuleConstants";
 import { setMetadata, setOwnMetaData } from "./JsonModuleBaseFunction";
 
