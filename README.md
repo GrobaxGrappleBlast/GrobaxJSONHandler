@@ -3,15 +3,16 @@ This is a Project to help serializing and deserializing JSON.
 With this you are able to design different schemes for your Objects, different schemes to be serialized into and deserialized from.
 ensure that you have enabled experimental decorators 
 
-## Schemes 
-A scheme is a name, that the decorater wil register the property decorator to.
-if no shceme is provided the scheme is 'BASE_SCHEME'
-if a property is registered for one theme and you serialize as another, you will not see the properties registered for teh other schemes
+The project was originaly made because i could not find good JSON libraries for TS, there was always something they either couldent do, or something complex i needed to do, to get them working. this is plug and play, just Serialize with JSONHandler's static functions. 
 
-### child objects.
-If there are child objects, the Handler will try to serialize them with the same scheme as the parent 
-*future versions should be able to define what child schemes are chosen* 
+The project was made as a framework for my own project, that needed complex deserialization. 
+
+## required Settings 
+In typescript you want to have your config settings under compilerOptions
+- "emitDecoratorMetadata": true,
+- "experimentalDecorators": true,
  
+
 ## Usage
 
 ```js
@@ -308,3 +309,13 @@ this will run when ever this class with this scheme, is deserialized or serializ
 	a method to run on the object before we serialize it into text. 
 - *onAfterDeSerialization: *(optional)**
 	a method to run on the object before after serialize it into text.
+
+
+## Schemes 
+A scheme is a name, that the decorater wil register the property decorator to.
+if no shceme is provided the scheme is 'BASE_SCHEME'
+if a property is registered for one theme and you serialize as another, you will not see the properties registered for teh other schemes
+
+### child objects.
+If there are child objects, the Handler will try to serialize them with the same scheme as the parent 
+*future versions should be able to define what child schemes are chosen* 
