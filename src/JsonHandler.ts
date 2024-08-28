@@ -180,13 +180,7 @@ export class JSONHandler{
 		// serializedObject is a new object, without non Jsonproperties
 		let result = new target();
 		let prototype = target.prototype;
-
-		// EVENT ON BEFORE DESERIALIZE
-		// todo implement;
-		
-
-
-
+ 
 		// get propertynames and loop through 
 		let propertyNames = Object.getOwnPropertyNames( obj );
 		for (let i = 0; i < propertyNames.length; i++) {
@@ -197,11 +191,10 @@ export class JSONHandler{
 			let meta = getMetaDataKeys(target,key,scheme);
 			let PropertyName = key;
 
-			if (meta.length == 0){
+			if (meta.length == 0 ){
 				continue;
 			}
-
-
+ 
 			// if this is an Out key, convert it to an IN Key, so we can get the right meta data. 
 			if ( meta.includes(JSON_TAGS.JSON_PROPERTY_NAME_MAP_IN ) ){
 				// get out key from the in Key
@@ -213,16 +206,6 @@ export class JSONHandler{
 				meta = getMetaDataKeys(target,key,scheme);
 				PropertyName = key;
 			} 
-
-
-			
-			// in case that this is a JSON property but ONLY for outgoing Not ingoing, then ignore it
-			//	else if (meta.includes(JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT)){
-			//		continue;
-			//	}
-
-			
-			
  
 			// Get the constructor if there is any, Generics take priority
 			let out : any = null; 

@@ -1,13 +1,18 @@
 {
     "compilerOptions": {
+		"outDir": "./dist",  
+		"rootDir": "./src",
+		"declaration":true,
+		 
+
         "esModuleInterop":true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "baseUrl": "./",   
         "sourceMap":true,
         "inlineSources": true,
-        "module": "ESNext",
-        "target": "ES6",
+        "module": "commonjs",
+        "target": "ES5",
         "allowJs": true,
         "noImplicitAny": false,
         "moduleResolution": "node",

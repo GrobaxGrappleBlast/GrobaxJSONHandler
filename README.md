@@ -15,19 +15,7 @@ If there are child objects, the Handler will try to serialize them with the same
 ## Usage
 
 ```js
-class MyClass{
-
-	@JsonNumber({ name : 'c' })
-	@JsonNumber({ name : 'firstNumber' , scheme:'testScheme'})
-	public a = 12;
-
-	@JsonArrayString ({ name : 'd' })
-	public b = "12"
-}
-
-var obj = new MyClass();
-
-function serialize( obj ){
+	var obj = new MyClass();
 	let baseScheme = JSONHandler.serialize(obj);
 	let testScheme = JSONHandler.serialize(obj, 'testScheme' );
 
@@ -42,12 +30,54 @@ function serialize( obj ){
 		**********
 		${testScheme}
 	`)
-}
 
-function derialize( json ){
-	let object = JSONHandler.deserialize(MyClass, json);
-	let testScheme = JSONHandler.deserialize(MyClass, json, scheme:'testScheme');
-}
+	/**
+		PRINTS OUT 
+		
+		baseScheme
+		**********
+		{"c":12,"d":["12"]}
+
+		testScheme
+		**********
+		 {"firstNumber":12}
+
+	*/
+
+	let JSONT = `{"c":"12","firstNumber":"5","d":"100000","a":2,"b":13 }`;
+	let object1 = JSONHandler.deserialize(MyClass, JSONT);
+	let object2 = JSONHandler.deserialize(MyClass, JSONT, 'testScheme');
+
+	console.log(
+		`
+		Deserialized1
+		**********
+		${JSON.stringify(object1)}
+
+		`
+	)
+	console.log(
+		`
+		Deserialized2
+		**********
+		${JSON.stringify(object2)}
+		`
+	)
+		 
+	//console.log(JSON.stringify(object2))
+
+	/**
+		PRINTS OUT 
+		
+		baseScheme
+		**********
+		 {"a":2,"b":[],"firstNumber":"5"}
+
+		testScheme
+		**********
+		{"a":2,"b":"12"}
+
+	*/
 
 ```
 
