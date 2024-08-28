@@ -7,80 +7,12 @@ The project was originaly made because i could not find good JSON libraries for 
 
 The project was made as a framework for my own project, that needed complex deserialization. 
 
-## required Settings 
+## Required Settings 
 In typescript you want to have your config settings under compilerOptions
 - "emitDecoratorMetadata": true,
 - "experimentalDecorators": true,
  
-
-## Usage
-
-```js
-	var obj = new MyClass();
-	let baseScheme = JSONHandler.serialize(obj);
-	let testScheme = JSONHandler.serialize(obj, 'testScheme' );
-
-	console.log(`
-		baseScheme
-		**********
-		${baseScheme}
-	`)
-
-	console.log(`
-		testScheme
-		**********
-		${testScheme}
-	`)
-
-	/**
-		PRINTS OUT 
-		
-		baseScheme
-		**********
-		{"c":12,"d":["12"]}
-
-		testScheme
-		**********
-		 {"firstNumber":12}
-
-	*/
-
-	let JSONT = `{"c":"12","firstNumber":"5","d":"100000","a":2,"b":13 }`;
-	let object1 = JSONHandler.deserialize(MyClass, JSONT);
-	let object2 = JSONHandler.deserialize(MyClass, JSONT, 'testScheme');
-
-	console.log(
-		`
-		Deserialized1
-		**********
-		${JSON.stringify(object1)}
-
-		`
-	)
-	console.log(
-		`
-		Deserialized2
-		**********
-		${JSON.stringify(object2)}
-		`
-	)
-		 
-	//console.log(JSON.stringify(object2))
-
-	/**
-		PRINTS OUT 
-		
-		baseScheme
-		**********
-		 {"a":2,"b":[],"firstNumber":"5"}
-
-		testScheme
-		**********
-		{"a":2,"b":"12"}
-
-	*/
-
-```
+  
 
 ## Member Decorators 
   
@@ -164,7 +96,7 @@ This is a basetype JsonProperty that forces it self to be a boolean;
 - *MappingFunctions: *(optional) object** <br>
   	advanced going in out methods, inside an object. <br>
 	mappingFunctions? :{ out:( t:IN , serialize?:any ) => OUT , in:( b:OUT, deserialize?:any ) => IN } , 
-  
+   
 <br><br>
 
 ### *@JsonClassTyped ( type, option )*  
@@ -319,3 +251,288 @@ if a property is registered for one theme and you serialize as another, you will
 ### child objects.
 If there are child objects, the Handler will try to serialize them with the same scheme as the parent 
 *future versions should be able to define what child schemes are chosen* 
+
+
+
+
+## Member Decorators 
+  
+### *@JsonProperty ( option )*  
+ 
+```js
+	var obj = new MyClass();
+	let baseScheme = JSONHandler.serialize(obj);
+	let testScheme = JSONHandler.serialize(obj, 'testScheme' );
+
+	console.log(`
+		baseScheme
+		**********
+		${baseScheme}
+	`)
+
+	console.log(`
+		testScheme
+		**********
+		${testScheme}
+	`)
+
+	/**
+		PRINTS OUT 
+		
+		baseScheme
+		**********
+		{"c":12,"d":["12"]}
+
+		testScheme
+		**********
+		 {"firstNumber":12}
+
+	*/
+
+	let JSONT = `{"c":"12","firstNumber":"5","d":"100000","a":2,"b":13 }`;
+	let object1 = JSONHandler.deserialize(MyClass, JSONT);
+	let object2 = JSONHandler.deserialize(MyClass, JSONT, 'testScheme');
+
+	console.log(
+		`
+		Deserialized1
+		**********
+		${JSON.stringify(object1)}
+
+		`
+	)
+	console.log(
+		`
+		Deserialized2
+		**********
+		${JSON.stringify(object2)}
+		`
+	)
+		 
+	//console.log(JSON.stringify(object2))
+
+	/**
+		PRINTS OUT 
+		
+		baseScheme
+		**********
+		 {"a":2,"b":[],"firstNumber":"5"}
+
+		testScheme
+		**********
+		{"a":2,"b":"12"}
+
+	*/
+
+```
+<br><br>
+
+### *@JsonNumber ( option )*  
+```js 
+	class MyNumberClass{
+
+		@JsonNumber({ name : 'c' })
+		public CC :any;
+		@JsonNumber({ name : 'isThisANumber' , scheme:'testScheme'})
+		public a :any;
+		@JsonNumber()
+		public b :any;
+		@JsonNumber()
+		public c :any;
+	} 
+
+	var obj = new MyNumberClass();
+	obj.CC = true;
+	obj.a="12";
+	obj.b=-12.2;
+	obj.c=[12,12,"12"];
+
+ 
+	let baseScheme = JSONHandler.serialize(obj);
+	let testScheme = JSONHandler.serialize(obj, 'testScheme' );
+
+	console.log(`
+		baseScheme
+		**********
+		${baseScheme}
+	`)
+
+	console.log(`
+		testScheme
+		**********
+		${testScheme}
+	`)
+
+	/**
+		PRINTS OUT 
+		
+		baseScheme
+		**********
+		{"c":1,"b":-12.2}
+
+		testScheme
+		**********
+		{"isThisANumber":12}
+
+	*/
+
+	let JSONT = `{"c":"12","isThisABoolean":"falsesssy","d":"100000","a":2,"b":13 }`;
+	let object1 = JSONHandler.deserialize(MyNumberClass, JSONT);
+	let object2 = JSONHandler.deserialize(MyNumberClass, JSONT, 'testScheme');
+
+	console.log(
+		`
+		Deserialized1
+		**********
+		${JSON.stringify(object1)}
+
+		`
+	)
+	console.log(
+		`
+		Deserialized2
+		**********
+		${JSON.stringify(object2)}
+		`
+	)
+		 
+	//console.log(JSON.stringify(object2))
+
+	/**
+		PRINTS OUT 
+		
+		baseScheme
+		**********
+		{"CC":12,"b":13}
+
+		testScheme
+		**********
+		{"a":2}
+
+	*/
+
+```
+ <br><br>
+
+### *@JsonString ( option )*  
+ 
+<br><br>
+
+### *@JsonBoolean ( option )*  
+ 
+```js 
+
+
+	class MyBooleanClass{
+
+		@JsonBoolean({ name : 'c' })
+		public CC :any;
+		@JsonBoolean({ name : 'isThisABoolean' , scheme:'testScheme'})
+		public a :any;
+		@JsonBoolean()
+		public b :any;
+		@JsonBoolean()
+		public c :any;
+	}
+
+	var obj = new MyBooleanClass();
+	obj.CC = true;
+	obj.a="12";
+	obj.b=-12.2;
+	obj.c=[12,12,"12"];
+
+
+	let baseScheme = JSONHandler.serialize(obj);
+	let testScheme = JSONHandler.serialize(obj, 'testScheme' );
+
+	console.log(`
+		baseScheme
+		**********
+		${baseScheme}
+	`)
+
+	console.log(`
+		testScheme
+		**********
+		${testScheme}
+	`)
+
+	/**
+		PRINTS OUT 
+		
+		baseScheme
+		**********
+		{"c":true,"b":true}
+
+		testScheme
+		**********
+		{"isThisABoolean":true}
+
+	*/
+
+	let JSONT = `{"c":"12","isThisABoolean":"falsesssy","d":"100000","a":2,"b":13 }`;
+	let object1 = JSONHandler.deserialize(MyBooleanClass, JSONT);
+	let object2 = JSONHandler.deserialize(MyBooleanClass, JSONT, 'testScheme');
+
+	console.log(
+		`
+		Deserialized1
+		**********
+		${JSON.stringify(object1)}
+
+		`
+	)
+	console.log(
+		`
+		Deserialized2
+		**********
+		${JSON.stringify(object2)}
+		`
+	)
+		 
+	//console.log(JSON.stringify(object2))
+
+	/**
+		PRINTS OUT 
+		
+		baseScheme
+		**********
+		{"CC":true,"b":true}
+
+		testScheme
+		**********
+		{"a":true}
+
+	*/
+```
+<br><br>
+
+### *@JsonClassTyped ( type, option )*  
+ 
+<br><br>
+
+### *@JsonArrayNumber ( option )*  
+ 
+<br><br>
+
+### *@JsonArrayString ( option )*  
+ 
+<br><br>
+
+
+### *@JsonArrayBoolean ( option )*  
+ 
+<br><br>
+
+### *@JsonArrayClassTyped ( type, option )*  
+ 
+<br><br>
+
+### *@JsonMapping ( type, option )*  
+ 
+<br><br>
+
+### *@JsonMappingRecordInArrayOut ( type, option )*  
+ 
+<br><br>
+ 

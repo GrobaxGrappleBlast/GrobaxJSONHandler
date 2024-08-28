@@ -434,6 +434,7 @@ test('Simple object To string and string Array Conversions', () => {
 	}
 	
 	compareObject(des			,orig			);
+	let t = JSONHandler.serialize(orig.simple);
 	compareObject(des.simple	,JSONHandler.serialize(orig.simple)	);
 	compareObject(des.simple2	,JSONHandler.serialize(orig.simple2));
 

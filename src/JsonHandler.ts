@@ -81,6 +81,7 @@ export class JSONHandler{
 			}
 			else {
 				 
+				 
 				out = JSONHandler.serializeRaw(obj[key] , scheme );
 				 
 			}
@@ -98,9 +99,9 @@ export class JSONHandler{
 					}
 					out = newout;
 				}else{
-					out = convFunc(out);
+					out = convFunc(obj[key]);
 				}
-			}
+			} 
 
 			result[PropertyName] = out;
 		}
@@ -146,7 +147,10 @@ export class JSONHandler{
 				if(obj == null)
 					return "";
 				
-				if(typeof obj == 'object'){
+				if( Array.isArray(obj) ){
+					return JSON.stringify(obj);
+				}
+				else if(typeof obj == 'object'){
 					return JSON.stringify(obj);
 				}
 
@@ -255,6 +259,10 @@ export class JSONHandler{
 				if (constr) {
 					out = JSONHandler.deserializeRaw(constr, obj[inKey]  , scheme , key);
 				} 
+				else if(meta.includes(JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE)){
+					let typeKey = getMetadata( JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE , target  , key , scheme );
+					out = JSONHandler.deserializeAndForceSimple(typeKey , obj[inKey] );
+				}
 				else{
 					out = obj[inKey];
 				}
