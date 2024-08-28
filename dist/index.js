@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JsonObject = exports.JSONHandler = exports.JsonMappingRecordInArrayOut = exports.JsonMapping = exports.JsonArrayClassTyped = exports.JsonArrayBoolean = exports.JsonArrayString = exports.JsonArrayNumber = exports.JsonClassTyped = exports.JsonBoolean = exports.JsonString = exports.JsonNumber = exports.JsonArrayProperty = exports.JsonProperty = void 0;
+exports.BASE_SCHEME = exports.JsonObject = exports.JSONHandler = exports.JsonMappingRecordInArrayOut = exports.JsonMapping = exports.JsonArrayClassTyped = exports.JsonArrayBoolean = exports.JsonArrayString = exports.JsonArrayNumber = exports.JsonClassTyped = exports.JsonBoolean = exports.JsonString = exports.JsonNumber = exports.JsonArrayProperty = exports.JsonProperty = void 0;
 var Decorators_1 = require("./Decorators");
 Object.defineProperty(exports, "JsonProperty", { enumerable: true, get: function () { return Decorators_1.JsonProperty; } });
 Object.defineProperty(exports, "JsonArrayProperty", { enumerable: true, get: function () { return Decorators_1.JsonArrayProperty; } });
@@ -17,4 +17,6 @@ Object.defineProperty(exports, "JsonMappingRecordInArrayOut", { enumerable: true
 Object.defineProperty(exports, "JsonObject", { enumerable: true, get: function () { return Decorators_1.JsonObject; } });
 var JsonHandler_1 = require("./JsonHandler");
 Object.defineProperty(exports, "JSONHandler", { enumerable: true, get: function () { return JsonHandler_1.JSONHandler; } });
+var JsonModuleConstants_1 = require("./JsonModuleConstants");
+Object.defineProperty(exports, "BASE_SCHEME", { enumerable: true, get: function () { return JsonModuleConstants_1.BASE_SCHEME; } });
 //# sourceMappingURL=index.js.map
