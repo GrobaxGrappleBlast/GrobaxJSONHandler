@@ -1,5 +1,5 @@
 import { JSONHandler, JsonArrayBoolean, JsonBoolean, JsonMapping, JsonMappingRecordInArrayOut, JsonProperty } from "../index";
-
+import { Reflect } from '../Reflect'
 interface hasInit{
 	init()
 	nulify()
@@ -156,6 +156,7 @@ test('Simple Conversions', () => {
 	
 	// test the simple boolean value
 	expect(des.simple).toBe(orig.simple)
+	let __META = Reflect.getAllMeta (des);
 	expect(des.simple2).toBe(true)
 
 	// test the array;

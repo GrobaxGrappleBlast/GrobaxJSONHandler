@@ -39,7 +39,7 @@ test('Readme_Example_one', () => {
 
 		testScheme
 		**********
-		{"firstNumber":12}
+		 {"firstNumber":12}
 
 	*/
 
@@ -55,7 +55,7 @@ test('Readme_Example_one', () => {
 		
 		baseScheme
 		**********
-		{"c":12,"d":["12"]}
+		 {"a":2,"b":[],"firstNumber":"5"}
 
 		testScheme
 		**********

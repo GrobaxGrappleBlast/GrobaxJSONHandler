@@ -235,7 +235,7 @@ export function JsonMappingRecordInArrayOut<IN extends object,OUT extends object
 	let type = option.type;
 	option = cleanNonAccesibleSettings(option ?? ({} as JSONInnerPropertyOptions<IN,OUT>)) as specialRecordArrayMappingProperties<IN,OUT>;
 	let outfunc = ( col : IN , s ) => { return Object.values(col).map( p => s(p) ) as OUT };
-	let infunc = ( col: OUT , d ) => { 
+	let infunc = ( col: OUT  , d ) => { 
 		let r = {};
 		// @ts-ignore
 		col.map( p =>{ 
@@ -244,6 +244,10 @@ export function JsonMappingRecordInArrayOut<IN extends object,OUT extends object
 			if(typeof v == 'function'){
 				try{
 					v = o[option.KeyPropertyName]();
+					console.log(option.KeyPropertyName);
+					if(v === null || v === undefined){
+						throw new Error(`after calling function ${option.KeyPropertyName} key value was '${v}' ` )
+					}
 				}catch(e){
 					let messageAddon = v.length > 0 ? ', Note that message must have 0 Arguments, that arent either optional or have default values': ''; 
 					let message = `Something went wrong with callign method '${option.KeyPropertyName}'${messageAddon}`

@@ -1,6 +1,8 @@
 import { BASE_SCHEME } from "./JsonModuleConstants";
+import { Reflect } from "./Reflect";
 
 export function hasMetaDataInScheme(metaTag , target , propertyKey , scheme ){
+	
 	try{
 		let data = Reflect.getMetadata( metaTag , target , propertyKey ); 
 		if(data[scheme] != undefined)
@@ -10,58 +12,30 @@ export function hasMetaDataInScheme(metaTag , target , propertyKey , scheme ){
 		return false;
 	}
 }
+
+// GET --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 export function getMetadata(metaTag , target , propertyKey , scheme : string = BASE_SCHEME){
-	let data = Reflect.getMetadata( metaTag , target , propertyKey ); 
-	if(!data)
-		return null;
-
-	let r = data[scheme] ?? data[BASE_SCHEME] ;
-	return r;
+	return Reflect.getMetadata(metaTag,target,propertyKey,scheme); 
+} 
+export function getOwnMetaData( metaTag , target , scheme : string = BASE_SCHEME  ){ 
+	return Reflect.getOwnMetaData(metaTag,target,scheme); 
 }
+
+// DEFINE --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 export function setMetadata( metaTag , value , target , propertyKey , scheme : string = BASE_SCHEME){
-	
-	// get meta data if it exists 
-	let data = Reflect.getMetadata( metaTag , target , propertyKey ); 
-	if(!data)
-		data = {}
-
-	// set value to scheme;
-	data[scheme] = value;
-	
-	// define the metaData;
-	Reflect.defineMetadata( metaTag, data, target, propertyKey);
+	Reflect.defineMetaData( metaTag , value, target ,propertyKey, scheme);   
+}
+export function setOwnMetaData( metaTag , target  , value , scheme : string = BASE_SCHEME ){ 
+	Reflect.defineOwnMetaData( metaTag , value, target , scheme);  
 }
 
-export function getOwnMetaData( metaTag , target , scheme : string = BASE_SCHEME  ){
-	// first we need the right target -> target
-	let targ = target['constructor'] != undefined ? target.constructor : target;
-
-	let data = Reflect.getOwnMetadata( metaTag , targ );
-	data = data ?? {};
-	if(data[scheme] != undefined)
-		return data[scheme];
-	return null;
-}
-export function setOwnMetaData( metaTag , target , value , scheme : string = BASE_SCHEME ){
-
-	// get meta data if it exists 
-	let data = Reflect.getOwnMetadata( metaTag , target ); 
-	if(!data)
-		data = {}
-
-	// set value to scheme;
-	data[scheme] = value;
-	
-	// define the metaData;
-	Reflect.defineMetadata( metaTag , data, target );
- 
-}
-export function getOwnMetaDataKeys(target ){
-
-	// first we need the right target -> target
-	let targ = target['constructor'] != undefined ? target.constructor : target;
-
-	let data = Reflect.getOwnMetadataKeys(targ);
-	return data;
+// KEYS --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+export function getOwnMetaDataKeys(target , scheme : string = BASE_SCHEME){
+	let keys = Reflect.getOwnMetaDataKeys(target , scheme);
+	return keys;
+} 
+export function getMetaDataKeys(target , key ,scheme : string = BASE_SCHEME ){ 
+	let keys = Reflect.getMetadataKeys( target , key , scheme ); 
+	return keys;
 }
 

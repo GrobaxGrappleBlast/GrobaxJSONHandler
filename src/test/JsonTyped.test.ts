@@ -1,6 +1,5 @@
 import { JSONHandler, JsonArrayBoolean, JsonArrayClassTyped, JsonArrayNumber, JsonArrayString, JsonBoolean, JsonClassTyped, JsonMappingRecordInArrayOut, JsonNumber, JsonProperty, JsonString } from  "../index";
-
-
+import { Reflect } from "../Reflect";
 
 export class SomethingElse{
 
@@ -30,7 +29,7 @@ export class InnerPiece {
 		return this.key;
 	}
 	public getKKey( index ){
-		return index[0]; 
+		return index[0]; // should cast exeption when not supplied with index
 	}
 	public getKK2ey( param? ){
 		if( param ){
@@ -254,6 +253,9 @@ test('Mapping function with Params', () => {
 	try{
 		let c = new Container_Mapped_viaMethod_AllParameterTypes_2;
 		c.init(); 
+
+		let meta = Reflect.getAllMeta(c);
+
 		var [orig, json, des ] = startTest( c , Container_Mapped_viaMethod_AllParameterTypes_2);
 	}catch(e){
 		hadException = true;
