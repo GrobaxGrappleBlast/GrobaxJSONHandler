@@ -38,7 +38,9 @@ export {
 	JsonMapping,
 	JsonMappingRecordInArrayOut,
 	JSONHandler,
-	JsonObject,
+	JsonObject
+}
+export{
 	BASE_SCHEME
 }
 export type {
