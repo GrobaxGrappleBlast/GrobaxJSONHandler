@@ -197,6 +197,11 @@ export class JSONHandler{
 			let meta = getMetaDataKeys(target,key,scheme);
 			let PropertyName = key;
 
+			if (meta.length == 0){
+				continue;
+			}
+
+
 			// if this is an Out key, convert it to an IN Key, so we can get the right meta data. 
 			if ( meta.includes(JSON_TAGS.JSON_PROPERTY_NAME_MAP_IN ) ){
 				// get out key from the in Key
@@ -209,6 +214,8 @@ export class JSONHandler{
 				PropertyName = key;
 			} 
 
+
+			
 			// in case that this is a JSON property but ONLY for outgoing Not ingoing, then ignore it
 			//	else if (meta.includes(JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT)){
 			//		continue;
