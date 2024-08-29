@@ -11,7 +11,7 @@
         "baseUrl": "./",   
         "sourceMap":true,
         "inlineSources": true,
-        "module": "commonjs",
+        "module": "ES2015",
         "target": "ES5",
         "allowJs": true,
         "noImplicitAny": false,
