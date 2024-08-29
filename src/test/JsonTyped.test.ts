@@ -16,7 +16,7 @@ var InnerPieceCounter = 0;
 
 export class InnerPiece {
 
-	constructor(){
+	public constructor(){
 		this.key = SomethingElse.getSome();
 		this.KKey = InnerPieceCounter++;
 		
@@ -147,11 +147,13 @@ function compareObject( obj1, obj2 , ignoreKeys : string[] = []){
 	 
 
 test('Simple Conversions', () => {
-	let c = new Container();
-	// TRUE CHECKS 
-	c.init();
-	var [orig, json, des ] = startTest( c , Container);
 	 
+	let orig = new Container(); 
+	orig.init(); 
+	var json = JSONHandler.serialize(orig);
+	var des= JSONHandler.deserialize(Container,json); 
+
+
 	var a = JSON.stringify(des);
 	var b = JSON.stringify(orig);
 

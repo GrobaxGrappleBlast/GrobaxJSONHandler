@@ -98,3 +98,69 @@ test('Try to deserialize an array from Non Array', () => {
 	expect(des.name.length == 1);
 	expect(des.name[0] == 2);
 })
+
+
+
+
+
+class ObjectA{
+	
+	@JsonString({name:'NAMED'})
+	public name : string ; 
+	
+	@JsonNumber({name:'VersionNumber'})
+	public version: number;
+
+}
+
+class ObjectB {
+
+	@JsonArrayClassTyped(ObjectA, {name:'data'})
+	public As : ObjectA[];
+
+	initWrong(){
+		//@ts-ignore
+		this.As = [ 
+			//@ts-ignore
+			{name:'NAME1', version:3},
+			//@ts-ignore
+			{name:'NAME2', version:"3"},
+			//@ts-ignore	
+			{name:'NAME3', version:{} } // object to number gives 1.
+		]
+	} 
+}
+test('Deserialize object with NON class instantiated objects ', () => {
+	let B = new ObjectB();
+	B.initWrong();
+	var json = JSONHandler.serialize(B);
+
+	// test that despite not being class instances. they are still serialized as if that class
+	var des1 : any = JSON.parse(json) as any;
+	expect(des1.data.length).toBe(3);
+	expect(des1.As).toBe(undefined);
+	
+	// each element checked
+	expect(des1.data[0].NAMED).toEqual("NAME1")
+	expect(des1.data[1].NAMED).toEqual("NAME2")
+	expect(des1.data[2].NAMED).toEqual("NAME3")
+	expect(des1.data[0].name).toEqual(undefined)
+	expect(des1.data[1].name).toEqual(undefined)
+	expect(des1.data[2].name).toEqual(undefined)
+
+
+	expect(des1.data[0].VersionNumber).toEqual(3)
+	expect(des1.data[1].VersionNumber).toEqual(3)
+	expect(des1.data[2].VersionNumber).toEqual(1)
+	expect(des1.data[0].version).toEqual(undefined)
+	expect(des1.data[1].version).toEqual(undefined)
+	expect(des1.data[2].version).toEqual(undefined)
+
+
+
+	var deser= JSONHandler.deserialize(ObjectB,json);  
+
+
+
+})
+

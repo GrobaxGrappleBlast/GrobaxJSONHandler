@@ -19,8 +19,50 @@ export class Reflect {
 	private static isPrototype( a : any){
 		return a && typeof a === 'object' && a.constructor === Object;
 	}
-	private static getOrCreateDefinedMetaData(obj : Constructor<any> | object ,scheme, create = false ){
+
+	public static getPrototype( obj : object | Constructor<any>){
 		let a
+		if( typeof obj == 'function'){
+			a = obj.prototype
+		}else{
+			a = obj.constructor.prototype
+		}
+		return a;
+	}
+	public static setPrototype(obj , prototype){
+ 
+		//Object.setPrototypeOf( obj , prototype )
+		if( typeof obj == 'function'){
+			throw new Error('Not Implemented Error, please report the scenario to me');
+		} 
+		else{
+			Object.setPrototypeOf( obj , prototype )
+		}
+	}
+
+	private static getOrCreateAllMetaData(obj : Constructor<any> | object ,create = false){
+		let a = Reflect.getPrototype(obj); 
+		if ( a === Object.prototype) {
+			return null;
+		}
+
+		if(a == null)
+			return null;
+   
+		if(!(a['gjmd'])){
+			if(!create)
+				return null;
+			a['gjmd'] = {};
+		}
+		return a['gjmd'];
+	}
+	private static getOrCreateDefinedMetaData(obj : Constructor<any> | object , scheme , create = false ){
+		let a = Reflect.getOrCreateAllMetaData(obj,create);
+		if(!a)
+			return null;
+
+
+		/*let a
 		if( typeof obj == 'function'){
 			a = obj.prototype
 		}else{
@@ -39,15 +81,15 @@ export class Reflect {
 			if(!create)
 				return null;
 			a['gjmd'] = {};
-		}
+		}*/
 
-		if(!(a['gjmd'][scheme])){
+		if(!(a[scheme])){
 			if(!create)
 				return null;
-			a['gjmd'][scheme] = {};
+			a[scheme] = {};
 		}
  
-		return a['gjmd'][scheme];
+		return a[scheme];
 	}
 	
 	// KEYS --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -105,8 +147,13 @@ export class Reflect {
 		return Reflect.hasMetaData(metaTag,target,selfKey,scheme); 
 	}
 
-	public static getAllMeta(obj, scheme = BASE_SCHEME ){
-		return Reflect.getOrCreateDefinedMetaData(obj,scheme);
+	public static getAllMeta(obj, scheme? : string|null ){
+		if (scheme){
+			return Reflect.getOrCreateDefinedMetaData(obj,scheme);
+		}
+		else{
+			return Reflect.getOrCreateAllMetaData(obj,true);
+		} 
 	}
 }	
 

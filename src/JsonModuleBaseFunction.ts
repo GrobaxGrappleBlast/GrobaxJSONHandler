@@ -1,4 +1,4 @@
-import { BASE_SCHEME } from "./JsonModuleConstants";
+import { BASE_SCHEME, Constructor } from "./JsonModuleConstants";
 import { Reflect } from "./Reflect";
 
 export function hasMetaDataInScheme(metaTag , target , propertyKey , scheme ){
@@ -39,3 +39,17 @@ export function getMetaDataKeys(target , key ,scheme : string = BASE_SCHEME ){
 	return keys;
 }
 
+export function hasMetaData( target , scheme? : string|null ){
+	
+	let a = Reflect.getAllMeta(target,scheme)
+	if(!a)
+		return false;
+	return true;
+}
+export function getPrototype( obj : object | Constructor<any>){
+	return Reflect.getPrototype(obj);
+}
+export function setPrototype(obj , prototype){
+	Reflect.setPrototype(obj , prototype );
+	return Reflect.getPrototype(obj) == prototype;
+}

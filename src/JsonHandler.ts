@@ -1,13 +1,14 @@
 import type { IOutputHandler } from "./JsonModuleConstants";
-import { getMetadata, getOwnMetaData, getOwnMetaDataKeys, hasMetaDataInScheme , getMetaDataKeys} from "./JsonModuleBaseFunction";
+import { getMetadata, getOwnMetaData, getOwnMetaDataKeys, hasMetaDataInScheme , getMetaDataKeys, hasMetaData , getPrototype , setPrototype} from "./JsonModuleBaseFunction";
 import { BASE_SCHEME, JSON_BASETYPES, JSON_TAGS, NoOutput, type Constructor } from "./JsonModuleConstants";
 				 
+
 export class JSONHandler{
  
 	public static serialize(obj: any  , scheme : string = BASE_SCHEME ): string {
 		return JSON.stringify(JSONHandler.serializeRaw(obj, scheme ));
 	} 
-	private static serializeRaw( obj:any  , scheme : string = BASE_SCHEME ): object{
+	private static serializeRaw( obj:any  , scheme : string = BASE_SCHEME , parentName = 'FIRST' ): object{
 
 		if(!obj){
 			return obj;
@@ -23,6 +24,18 @@ export class JSONHandler{
 				
 		}
 		
+
+		// in case this is a regular object with no decorators 
+		if ( !hasMetaData(obj,scheme) ){
+			try{
+				return (obj);
+			}
+			catch(e){
+				return {};
+			}
+		}
+
+
 		// serializedObject is a new object, without non Jsonproperties
 		let result = {};
 
@@ -37,6 +50,7 @@ export class JSONHandler{
 				f(obj);
 		}
 
+		
 		// get propertynames and loop through 
 		let propertyNames;
 		propertyNames = Object.getOwnPropertyNames( obj );
@@ -44,8 +58,7 @@ export class JSONHandler{
 			
 			// get basic properties
 			const key = propertyNames[i];
-			let meta = getMetaDataKeys(obj,key,scheme);
-			//let meta = Reflect.getMetadataKeys( obj , key );	
+			let meta = getMetaDataKeys(obj,key,scheme); 
 			
 			// check if the scheme we are about to export have The Property in it
 			if( !meta.includes(JSON_TAGS.JSON_PROPERTY) ){
@@ -58,6 +71,28 @@ export class JSONHandler{
 				PropertyName = getMetadata( JSON_TAGS.JSON_PROPERTY_NAME_MAP_OUT , obj , key  , scheme ); 
 			}
 
+
+			// if the item is typed, then we excange the prototypes for each object as we deserialize. 
+			// we do this in a funciton to minimize if statement chaos;
+			let typedconversion = ( v :any , ser : (v) => any ) => v;
+			if (meta.includes(JSON_TAGS.JSON_PROPERTY_TYPED)){
+				typedconversion = ( v :any , ser : (v) => any ) => {
+					
+					// get prototypes;
+					let during = (getMetadata(JSON_TAGS.JSON_PROPERTY_TYPED, obj , key , scheme)).prototype;
+					let before = getPrototype(v);
+ 
+					// set prototype serialize then set prototype back 
+					setPrototype( v , during );
+					let r = ser(v);
+					setPrototype( v , before );
+
+					// done
+					return r;
+				}
+			}
+
+
 			// if there is a mapping function
 			let out : any = null;
 			if ( meta.includes(JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT )){
@@ -69,28 +104,35 @@ export class JSONHandler{
 				if(obj[key]){
 					if(Array.isArray(obj[key])){
 						for (let j = 0; j < obj[key].length; j++) {
-							const e = JSONHandler.serializeRaw(obj[key][j] , scheme );
+
+							const e = typedconversion( 
+								obj[key][j] ,
+								(o) => JSONHandler.serializeRaw( o , scheme , parentName + ':['+j+']:' + key )
+							)
+							//const e = JSONHandler.serializeRaw( obj[key][j] , scheme );
 							out.push(e)
 						}
 					}else{
 						out.push(
-							JSONHandler.serializeRaw(obj[key] , scheme )
+							typedconversion( 
+								obj[key] ,
+								(o) => JSONHandler.serializeRaw( o , scheme , parentName + ':' + key )
+							) 
 						)
 					}
 				}
 			}
-			else {
-				 
-				 
-				out = JSONHandler.serializeRaw(obj[key] , scheme );
-				 
+			else { 
+				out = typedconversion( 
+					obj[key] ,
+					(o) => JSONHandler.serializeRaw( o , scheme , parentName + ':' + key )
+				) 
 			}
 
 			// HANDLE Force Typing
 			if( meta.includes(JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE)){
-				let typekey = getMetadata( JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE , obj , key  , scheme )
-				
-				let convFunc = (e) => JSONHandler.deserializeAndForceSimple(typekey, e);
+				let typekey = getMetadata( JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE , obj , key  , scheme ) 
+				let convFunc = (e) => JSONHandler.deserializeAndForceSimple(typekey, e, scheme);
 				if ( meta.includes(JSON_TAGS.JSON_PROPERTY_FORCE_ARRAY  )) {
 					let temp = out;
 					let newout : any[] = [];
@@ -101,8 +143,7 @@ export class JSONHandler{
 				}else{
 					out = convFunc(obj[key]);
 				}
-			} 
-
+			}  
 			result[PropertyName] = out;
 		}
 
@@ -131,12 +172,9 @@ export class JSONHandler{
 		return this.deserializeRaw(target,json , scheme );
 	} 
 
-	private static deserializeAndForceSimple( typekey , obj ){
+	private static deserializeAndForceSimple( typekey , obj , scheme : string = BASE_SCHEME ){
 
-		let out : any = obj ;
-		// HANDLE Force Typing
-		//if( meta.includes(JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE)){
-		//let typekey = Reflect.getMetadata( JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE , obj , key )
+		let out : any = obj ; 
 		
 		let convFunc: (e:any) => any = (e) => e; 
 		switch(typekey){
@@ -150,8 +188,12 @@ export class JSONHandler{
 				if( Array.isArray(obj) ){
 					return JSON.stringify(obj);
 				}
-				else if(typeof obj == 'object'){
-					return JSON.stringify(obj);
+				else if(typeof obj == 'object'){ 
+					if(hasMetaData(obj,scheme)){
+						return JSONHandler.serialize( obj,scheme );
+					}else{
+						return JSON.stringify(obj);
+					} 
 				}
 
 				convFunc = (input) => String(input);

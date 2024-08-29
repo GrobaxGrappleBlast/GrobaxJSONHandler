@@ -62,8 +62,7 @@ test('Readme_Example_one', () => {
 		${JSON.stringify(object2)}
 		`
 	)
-		 
-	//console.log(JSON.stringify(object2))
+		  
 
 	/**
 		PRINTS OUT 
@@ -149,9 +148,7 @@ test('Readme_BooleanExample', () => {
 		${JSON.stringify(object2)}
 		`
 	)
-		 
-	//console.log(JSON.stringify(object2))
-
+		  
 	/**
 		PRINTS OUT 
 		
@@ -219,8 +216,7 @@ test('Readme_NumberExample', () => {
 
 	let JSONT = `{"c":"12","isThisABoolean":"falsesssy","d":"100000","a":2,"b":13 }`;
 	let object1 = JSONHandler.deserialize(MyNumberClass, JSONT);
-	let object2 = JSONHandler.deserialize(MyNumberClass, JSONT, 'testScheme');
-
+	let object2 = JSONHandler.deserialize(MyNumberClass, JSONT, 'testScheme'); 
 	console.log(
 		`
 		Deserialized1
@@ -236,8 +232,7 @@ test('Readme_NumberExample', () => {
 		${JSON.stringify(object2)}
 		`
 	)
-		 
-	//console.log(JSON.stringify(object2))
+		  
 
 	/**
 		PRINTS OUT 
@@ -254,8 +249,7 @@ test('Readme_NumberExample', () => {
 })
 
 
-class MyStringClass{
-
+class MyStringClass{ 
 	@JsonString({ name : 'c' })
 	public CC :any;
 	@JsonString({ name : 'isThisANumber' , scheme:'testScheme'})
@@ -264,8 +258,7 @@ class MyStringClass{
 	public b :any;
 	@JsonString()
 	public d :any;
-}  
-
+} 
 test('Readme_StringExample', () => {
 
 	var obj = new MyStringClass();
@@ -299,8 +292,7 @@ test('Readme_StringExample', () => {
 
 		testScheme
 		**********
-		{"isThisANumber":"12"}
-
+		{"isThisANumber":"12"} 
 	*/
 
 	let JSONT = `{"c":"12","isThisABoolean":"falsesssy","d":"100000","a":2,"b":13 }`;
@@ -322,9 +314,7 @@ test('Readme_StringExample', () => {
 		${JSON.stringify(object2)}
 		`
 	)
-		 
-	//console.log(JSON.stringify(object2))
-
+		  
 	/**
 		PRINTS OUT 
 		
@@ -334,7 +324,6 @@ test('Readme_StringExample', () => {
 
 		testScheme
 		**********
-		{"a":"2"}
-
+		{"a":"2"} 
 	*/
 })

@@ -1,4 +1,4 @@
-import { JSONHandler, JsonArrayBoolean, JsonArrayString, JsonBoolean, JsonMapping, JsonMappingRecordInArrayOut, JsonNumber, JsonProperty, JsonString } from  "../index";
+import { JSONHandler, JsonArrayBoolean, JsonArrayString, JsonBoolean, JsonClassTyped, JsonMapping, JsonMappingRecordInArrayOut, JsonNumber, JsonProperty, JsonString } from  "../index";
 
 interface hasInit{
 	init()
@@ -175,7 +175,7 @@ export class StringContainer_object  implements hasInit {
 	@JsonArrayString()	
 	public array: object[] | null ;
 		
-	@JsonString({name:"t"})
+	@JsonString( {name:"t"})
 	public simple2: object | null;
 
 
@@ -418,6 +418,127 @@ test('Simple Number To string and string Array Conversions', () => {
 	)
 })
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+export class StringPiece{
+
+	public constructor(){}
+
+	@JsonString({name:"myString"})
+	public t1: string = "strValue";
+
+	@JsonBoolean({name:"myBool"})
+	public t2: boolean = true;
+
+	@JsonNumber({name:"myInteger"})
+	public t3: number = 1;
+
+	public tt1: string = "strValue";
+	public tt2: boolean = true;
+	public tt3: number = 1;
+		
+}
+export class StringContainer_object  implements hasInit {
+	
+	constructor(){}
+
+	public init(){	
+		this.simple = {name:"ornfreyd"};
+
+		//@ts-ignore
+		this.array = {name:"Jeffrey"};
+		this.simple2 =   new StringPiece();
+		this.array2 =	[new StringPiece()];
+	}
+	public nulify(){	
+		this.simple	= null;
+		this.array	= null;
+		this.simple2= null;
+		this.array2	= null;
+	}
+
+	@JsonArrayString({name:"x"})
+	public array2: object[] | null;
+
+	@JsonString()
+	public simple: object | null ;
+
+	@JsonArrayString()	
+	public array: object[] | null ;
+		
+	@jsonString({name:"t"})
+	public simple2: object | null;
+
+
+}
+
+*/
 test('Simple object To string and string Array Conversions', () => {
 	let c = new StringContainer_object(); 
 	c.init();
@@ -433,10 +554,12 @@ test('Simple object To string and string Array Conversions', () => {
 		) 	
 	}
 	
-	compareObject(des			,orig			);
-	let t = JSONHandler.serialize(orig.simple);
-	compareObject(des.simple	,JSONHandler.serialize(orig.simple)	);
-	compareObject(des.simple2	,JSONHandler.serialize(orig.simple2));
+	compareObject( des , orig );
+	let t = JSONHandler.serialize(orig.simple2);
+	
+	
+	compareObject( des.simple	, JSONHandler.serialize(orig.simple) 	);
+	compareObject( des.simple2	, JSONHandler.serialize(orig.simple2)	);
 
 	expect(des.array .length).toBe(1);
 	expect(des.array2.length).toBe(1);
@@ -450,7 +573,6 @@ test('Simple object To string and string Array Conversions', () => {
 			des.array2[i]
 		).toBe(JSONHandler.serialize(orig.array2[i])); 
 	}
- 
-	
+  
 })
 
