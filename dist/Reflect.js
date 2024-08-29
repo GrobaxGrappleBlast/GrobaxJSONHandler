@@ -11,14 +11,7 @@ var MetaDataTagName = 'gjmd'; // Grobax Json Meta Data;
 var Reflect = /** @class */ (function () {
     function Reflect() {
     }
-    // structure is 
-    // OLD : prototype > MetaDataTagName > scheme > key > value 
-    // prototype > MetaDataTagName > scheme > key > tag > value 
-    Reflect.isPrototype = function (a) {
-        return a && typeof a === 'object' && a.constructor === Object;
-    };
-    Reflect.getOrCreateDefinedMetaData = function (obj, scheme, create) {
-        if (create === void 0) { create = false; }
+    Reflect.getPrototype = function (obj) {
         var a;
         if (typeof obj == 'function') {
             a = obj.prototype;
@@ -26,6 +19,20 @@ var Reflect = /** @class */ (function () {
         else {
             a = obj.constructor.prototype;
         }
+        return a;
+    };
+    Reflect.setPrototype = function (obj, prototype) {
+        //Object.setPrototypeOf( obj , prototype )
+        if (typeof obj == 'function') {
+            throw new Error('Not Implemented Error, please report the scenario to me');
+        }
+        else {
+            Object.setPrototypeOf(obj, prototype);
+        }
+    };
+    Reflect.getOrCreateAllMetaData = function (obj, create) {
+        if (create === void 0) { create = false; }
+        var a = Reflect.getPrototype(obj);
         if (a === Object.prototype) {
             return null;
         }
@@ -36,12 +43,19 @@ var Reflect = /** @class */ (function () {
                 return null;
             a['gjmd'] = {};
         }
-        if (!(a['gjmd'][scheme])) {
+        return a['gjmd'];
+    };
+    Reflect.getOrCreateDefinedMetaData = function (obj, scheme, create) {
+        if (create === void 0) { create = false; }
+        var a = Reflect.getOrCreateAllMetaData(obj, create);
+        if (!a)
+            return null;
+        if (!(a[scheme])) {
             if (!create)
                 return null;
-            a['gjmd'][scheme] = {};
+            a[scheme] = {};
         }
-        return a['gjmd'][scheme];
+        return a[scheme];
     };
     // KEYS --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     Reflect.getMetadataKeys = function (obj, key, scheme) {
@@ -97,8 +111,12 @@ var Reflect = /** @class */ (function () {
         return Reflect.hasMetaData(metaTag, target, selfKey, scheme);
     };
     Reflect.getAllMeta = function (obj, scheme) {
-        if (scheme === void 0) { scheme = BASE_SCHEME; }
-        return Reflect.getOrCreateDefinedMetaData(obj, scheme);
+        if (scheme) {
+            return Reflect.getOrCreateDefinedMetaData(obj, scheme);
+        }
+        else {
+            return Reflect.getOrCreateAllMetaData(obj, true);
+        }
     };
     return Reflect;
 }());

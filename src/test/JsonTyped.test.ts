@@ -173,9 +173,7 @@ test('Mapping Conversions With Method and Property Get Methods', () => {
 		const a = desColArr[i]
 		const b = origColArr[i]
 		compareObject(a,b,['key','KKey']);
-	}
-	
-	 
+	} 
 })
  
 

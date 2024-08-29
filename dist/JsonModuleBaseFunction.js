@@ -40,4 +40,17 @@ export function getMetaDataKeys(target, key, scheme) {
     var keys = Reflect.getMetadataKeys(target, key, scheme);
     return keys;
 }
+export function hasMetaData(target, scheme) {
+    var a = Reflect.getAllMeta(target, scheme);
+    if (!a)
+        return false;
+    return true;
+}
+export function getPrototype(obj) {
+    return Reflect.getPrototype(obj);
+}
+export function setPrototype(obj, prototype) {
+    Reflect.setPrototype(obj, prototype);
+    return Reflect.getPrototype(obj) == prototype;
+}
 //# sourceMappingURL=JsonModuleBaseFunction.js.map

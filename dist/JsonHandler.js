@@ -1,4 +1,4 @@
-import { getMetadata, getOwnMetaData, getOwnMetaDataKeys, getMetaDataKeys } from "./JsonModuleBaseFunction";
+import { getMetadata, getOwnMetaData, getOwnMetaDataKeys, getMetaDataKeys, hasMetaData, getPrototype, setPrototype } from "./JsonModuleBaseFunction";
 import { BASE_SCHEME, JSON_BASETYPES, JSON_TAGS, NoOutput } from "./JsonModuleConstants";
 var JSONHandler = /** @class */ (function () {
     function JSONHandler() {
@@ -7,8 +7,9 @@ var JSONHandler = /** @class */ (function () {
         if (scheme === void 0) { scheme = BASE_SCHEME; }
         return JSON.stringify(JSONHandler.serializeRaw(obj, scheme));
     };
-    JSONHandler.serializeRaw = function (obj, scheme) {
+    JSONHandler.serializeRaw = function (obj, scheme, parentName) {
         if (scheme === void 0) { scheme = BASE_SCHEME; }
+        if (parentName === void 0) { parentName = 'FIRST'; }
         if (!obj) {
             return obj;
         }
@@ -19,6 +20,15 @@ var JSONHandler = /** @class */ (function () {
             case 'boolean':
             case 'number':
                 return obj;
+        }
+        // in case this is a regular object with no decorators 
+        if (!hasMetaData(obj, scheme)) {
+            try {
+                return (obj);
+            }
+            catch (e) {
+                return {};
+            }
         }
         // serializedObject is a new object, without non Jsonproperties
         var result = {};
@@ -38,7 +48,6 @@ var JSONHandler = /** @class */ (function () {
             // get basic properties
             var key = propertyNames[i];
             var meta = getMetaDataKeys(obj, key, scheme);
-            //let meta = Reflect.getMetadataKeys( obj , key );	
             // check if the scheme we are about to export have The Property in it
             if (!meta.includes(JSON_TAGS.JSON_PROPERTY)) {
                 return "continue";
@@ -47,6 +56,22 @@ var JSONHandler = /** @class */ (function () {
             var PropertyName = key;
             if (meta.includes(JSON_TAGS.JSON_PROPERTY_NAME_MAP_OUT)) {
                 PropertyName = getMetadata(JSON_TAGS.JSON_PROPERTY_NAME_MAP_OUT, obj, key, scheme);
+            }
+            // if the item is typed, then we excange the prototypes for each object as we deserialize. 
+            // we do this in a funciton to minimize if statement chaos;
+            var typedconversion = function (v, ser) { return v; };
+            if (meta.includes(JSON_TAGS.JSON_PROPERTY_TYPED)) {
+                typedconversion = function (v, ser) {
+                    // get prototypes;
+                    var during = (getMetadata(JSON_TAGS.JSON_PROPERTY_TYPED, obj, key, scheme)).prototype;
+                    var before = getPrototype(v);
+                    // set prototype serialize then set prototype back 
+                    setPrototype(v, during);
+                    var r = ser(v);
+                    setPrototype(v, before);
+                    // done
+                    return r;
+                };
             }
             // if there is a mapping function
             var out = null;
@@ -58,23 +83,27 @@ var JSONHandler = /** @class */ (function () {
                 out = [];
                 if (obj[key]) {
                     if (Array.isArray(obj[key])) {
-                        for (var j = 0; j < obj[key].length; j++) {
-                            var e = JSONHandler.serializeRaw(obj[key][j], scheme);
+                        var _loop_2 = function (j) {
+                            var e = typedconversion(obj[key][j], function (o) { return JSONHandler.serializeRaw(o, scheme, parentName + ':[' + j + ']:' + key); });
+                            //const e = JSONHandler.serializeRaw( obj[key][j] , scheme );
                             out.push(e);
+                        };
+                        for (var j = 0; j < obj[key].length; j++) {
+                            _loop_2(j);
                         }
                     }
                     else {
-                        out.push(JSONHandler.serializeRaw(obj[key], scheme));
+                        out.push(typedconversion(obj[key], function (o) { return JSONHandler.serializeRaw(o, scheme, parentName + ':' + key); }));
                     }
                 }
             }
             else {
-                out = JSONHandler.serializeRaw(obj[key], scheme);
+                out = typedconversion(obj[key], function (o) { return JSONHandler.serializeRaw(o, scheme, parentName + ':' + key); });
             }
             // HANDLE Force Typing
             if (meta.includes(JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE)) {
                 var typekey_1 = getMetadata(JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE, obj, key, scheme);
-                var convFunc = function (e) { return JSONHandler.deserializeAndForceSimple(typekey_1, e); };
+                var convFunc = function (e) { return JSONHandler.deserializeAndForceSimple(typekey_1, e, scheme); };
                 if (meta.includes(JSON_TAGS.JSON_PROPERTY_FORCE_ARRAY)) {
                     var temp = out;
                     var newout = [];
@@ -84,7 +113,7 @@ var JSONHandler = /** @class */ (function () {
                     out = newout;
                 }
                 else {
-                    out = convFunc(out);
+                    out = convFunc(obj[key]);
                 }
             }
             result[PropertyName] = out;
@@ -111,11 +140,9 @@ var JSONHandler = /** @class */ (function () {
         }
         return this.deserializeRaw(target, json, scheme);
     };
-    JSONHandler.deserializeAndForceSimple = function (typekey, obj) {
+    JSONHandler.deserializeAndForceSimple = function (typekey, obj, scheme) {
+        if (scheme === void 0) { scheme = BASE_SCHEME; }
         var out = obj;
-        // HANDLE Force Typing
-        //if( meta.includes(JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE)){
-        //let typekey = Reflect.getMetadata( JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE , obj , key )
         var convFunc = function (e) { return e; };
         switch (typekey) {
             case JSON_BASETYPES.bool:
@@ -124,8 +151,16 @@ var JSONHandler = /** @class */ (function () {
             case JSON_BASETYPES.string:
                 if (obj == null)
                     return "";
-                if (typeof obj == 'object') {
+                if (Array.isArray(obj)) {
                     return JSON.stringify(obj);
+                }
+                else if (typeof obj == 'object') {
+                    if (hasMetaData(obj, scheme)) {
+                        return JSONHandler.serialize(obj, scheme);
+                    }
+                    else {
+                        return JSON.stringify(obj);
+                    }
                 }
                 convFunc = function (input) { return String(input); };
                 break;
@@ -156,7 +191,7 @@ var JSONHandler = /** @class */ (function () {
         var prototype = target.prototype;
         // get propertynames and loop through 
         var propertyNames = Object.getOwnPropertyNames(obj);
-        var _loop_2 = function (i) {
+        var _loop_3 = function (i) {
             // get basic properties
             var key = propertyNames[i];
             var inKey = key;
@@ -222,6 +257,10 @@ var JSONHandler = /** @class */ (function () {
                 if (constr) {
                     out = JSONHandler.deserializeRaw(constr, obj[inKey], scheme, key);
                 }
+                else if (meta.includes(JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE)) {
+                    var typeKey = getMetadata(JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE, target, key, scheme);
+                    out = JSONHandler.deserializeAndForceSimple(typeKey, obj[inKey]);
+                }
                 else {
                     out = obj[inKey];
                 }
@@ -229,7 +268,7 @@ var JSONHandler = /** @class */ (function () {
             result[PropertyName] = out;
         };
         for (var i = 0; i < propertyNames.length; i++) {
-            _loop_2(i);
+            _loop_3(i);
         }
         // EVENT ON AFTER DESERIALIZE
         var ObjectMeta = getOwnMetaDataKeys(result);
