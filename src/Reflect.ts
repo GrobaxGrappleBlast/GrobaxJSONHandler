@@ -12,14 +12,8 @@ function createGuid () {
 const selfKey = createGuid() + "SELF";
 const MetaDataTagName = 'gjmd' // Grobax Json Meta Data;
 export class Reflect { 
-
-	// structure is 
-	// OLD : prototype > MetaDataTagName > scheme > key > value 
-	// prototype > MetaDataTagName > scheme > key > tag > value 
-	private static isPrototype( a : any){
-		return a && typeof a === 'object' && a.constructor === Object;
-	}
-
+ 
+ 
 	public static getPrototype( obj : object | Constructor<any>){
 		let a
 		if( typeof obj == 'function'){
@@ -60,29 +54,7 @@ export class Reflect {
 		let a = Reflect.getOrCreateAllMetaData(obj,create);
 		if(!a)
 			return null;
-
-
-		/*let a
-		if( typeof obj == 'function'){
-			a = obj.prototype
-		}else{
-			a = obj.constructor.prototype
-		}
-		 
-		
-		if ( a === Object.prototype) {
-			return null;
-		}
-
-		if(a == null)
-			return null;
-   
-		if(!(a['gjmd'])){
-			if(!create)
-				return null;
-			a['gjmd'] = {};
-		}*/
-
+ 
 		if(!(a[scheme])){
 			if(!create)
 				return null;

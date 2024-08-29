@@ -91,8 +91,7 @@ export class JSONHandler{
 					return r;
 				}
 			}
-
-
+ 
 			// if there is a mapping function
 			let out : any = null;
 			if ( meta.includes(JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT )){
