@@ -4,7 +4,7 @@ import { JSONHandler, JsonArrayBoolean, JsonArrayClassTyped, JsonArrayNumber, Js
 class MyClass{
 
 	@JsonNumber({ name : 'c' })
-	@JsonNumber({ name : 'firstNumber' , scheme:'testScheme'})
+	@JsonNumber({ name : 'firstNumber' , scheme:['testScheme']})
 	public a = 12;
 
 	@JsonArrayString ({ name : 'd' })

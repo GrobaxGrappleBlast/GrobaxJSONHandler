@@ -16,11 +16,10 @@ exports.JsonObject = JsonObject;
 var JsonModuleConstants_1 = require("./JsonModuleConstants");
 var JsonModuleBaseFunction_1 = require("./JsonModuleBaseFunction");
 function cleanNonAccesibleSettings(option) {
-    var _a;
     if (!option)
         return {};
-    option.scheme = option.scheme == '' ? JsonModuleConstants_1.BASE_SCHEME : option.scheme;
-    option.scheme = (_a = option.scheme) !== null && _a !== void 0 ? _a : JsonModuleConstants_1.BASE_SCHEME;
+    if (!option.scheme || option.scheme.length == 0)
+        option.scheme = [JsonModuleConstants_1.BASE_SCHEME];
     option.mappingFunctions = null;
     option.type = null;
     option.isArray = null;
@@ -33,33 +32,49 @@ function cleanNonAccesibleSettings(option) {
 */
 function JsonProperty(option) {
     return function (target, propertyKey) {
-        var _a;
-        var scheme = (_a = option === null || option === void 0 ? void 0 : option.scheme) !== null && _a !== void 0 ? _a : JsonModuleConstants_1.BASE_SCHEME;
-        (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY, true, target, propertyKey, scheme);
-        if (!option) {
-            return;
+        var schemes;
+        if (!(option === null || option === void 0 ? void 0 : option.scheme)) {
+            schemes = [JsonModuleConstants_1.BASE_SCHEME];
         }
-        if (option.forceBaseType) {
-            switch (option.forceBaseType) {
-                case JsonModuleConstants_1.JSON_BASETYPES.string:
-                case JsonModuleConstants_1.JSON_BASETYPES.number:
-                case JsonModuleConstants_1.JSON_BASETYPES.bool:
-                    (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE, option.forceBaseType, target, propertyKey, scheme);
+        else if (Array.isArray(option.scheme)) {
+            if (option.scheme.length == 0) {
+                schemes = [JsonModuleConstants_1.BASE_SCHEME];
+            }
+            else {
+                schemes = option.scheme;
             }
         }
-        if (option.isArray) {
-            (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FORCE_ARRAY, true, target, propertyKey, scheme);
+        else {
+            schemes = [option.scheme];
         }
-        if (option.name) {
-            (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_NAME_MAP_IN, propertyKey, target, option.name, scheme);
-            (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_NAME_MAP_OUT, option.name, target, propertyKey, scheme);
-        }
-        if (option.mappingFunctions) {
-            (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FUNC_MAP_IN, option.mappingFunctions.in, target, propertyKey, scheme);
-            (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT, option.mappingFunctions.out, target, propertyKey, scheme);
-        }
-        if (option.type) {
-            (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_TYPED, option.type, target, propertyKey, scheme);
+        for (var i = 0; i < schemes.length; i++) {
+            var scheme = schemes[i];
+            (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY, true, target, propertyKey, scheme);
+            if (!option) {
+                return;
+            }
+            if (option.forceBaseType) {
+                switch (option.forceBaseType) {
+                    case JsonModuleConstants_1.JSON_BASETYPES.string:
+                    case JsonModuleConstants_1.JSON_BASETYPES.number:
+                    case JsonModuleConstants_1.JSON_BASETYPES.bool:
+                        (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE, option.forceBaseType, target, propertyKey, scheme);
+                }
+            }
+            if (option.isArray) {
+                (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FORCE_ARRAY, true, target, propertyKey, scheme);
+            }
+            if (option.name) {
+                (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_NAME_MAP_IN, propertyKey, target, option.name, scheme);
+                (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_NAME_MAP_OUT, option.name, target, propertyKey, scheme);
+            }
+            if (option.mappingFunctions) {
+                (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FUNC_MAP_IN, option.mappingFunctions.in, target, propertyKey, scheme);
+                (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT, option.mappingFunctions.out, target, propertyKey, scheme);
+            }
+            if (option.type) {
+                (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_TYPED, option.type, target, propertyKey, scheme);
+            }
         }
     };
 }
@@ -204,24 +219,28 @@ function JsonMappingRecordInArrayOut(option) {
     return JsonProperty(option);
 }
 function cleanObjectOptions(option) {
-    var _a;
     if (!option)
         option = {};
     if (!option.onAfterDeSerialization) {
         option.onAfterDeSerialization = function (o) { };
     }
-    if (option.scheme == '')
-        option.scheme = undefined;
-    option.scheme = (_a = option.scheme) !== null && _a !== void 0 ? _a : JsonModuleConstants_1.BASE_SCHEME;
+    if (!option.scheme || option.scheme.length == 0)
+        option.scheme = [JsonModuleConstants_1.BASE_SCHEME];
     return option;
 }
 function JsonObject(option) {
     option = cleanObjectOptions(option);
     return function (target) {
-        if (option.onAfterDeSerialization)
-            (0, JsonModuleBaseFunction_1.setOwnMetaData)(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_AFTER_DE_SERIALIZATION, target, option.onAfterDeSerialization, option.scheme);
-        if (option.onBeforeSerialization)
-            (0, JsonModuleBaseFunction_1.setOwnMetaData)(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_BEFORE_SERIALIZATION, target, option.onBeforeSerialization, option.scheme);
+        var schemes = option === null || option === void 0 ? void 0 : option.scheme;
+        if (!schemes || schemes.length == 0)
+            schemes = [JsonModuleConstants_1.BASE_SCHEME];
+        for (var i = 0; i < schemes.length; i++) {
+            var scheme = schemes[i];
+            if (option.onAfterDeSerialization)
+                (0, JsonModuleBaseFunction_1.setOwnMetaData)(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_AFTER_DE_SERIALIZATION, target, option.onAfterDeSerialization, scheme);
+            if (option.onBeforeSerialization)
+                (0, JsonModuleBaseFunction_1.setOwnMetaData)(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_BEFORE_SERIALIZATION, target, option.onBeforeSerialization, scheme);
+        }
     };
 }
 //# sourceMappingURL=Decorators.js.map

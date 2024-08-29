@@ -6,8 +6,8 @@ function cleanNonAccesibleSettings( option?:JSONPropertyOptions ){
 	if(!option)
 		return {};
 
-	option.scheme = option.scheme == '' ? BASE_SCHEME : option.scheme;
-	option.scheme = option.scheme ?? BASE_SCHEME;
+	if(!option.scheme || option.scheme.length == 0)
+		option.scheme = [BASE_SCHEME];
 
 	(option as any).mappingFunctions	= null;
 	(option as any).type 				= null;
@@ -31,7 +31,7 @@ export interface propertyJSONInnerOptions<IN extends object,OUT extends object> 
 export interface propertiesJsonMapping<IN extends object,OUT extends object>{
 	
 	/**what scheme this belongs to */
-	scheme?:string, 
+	scheme?:string[] | string , 
 
 	/**the function to operate the data, before going out */
 	inFunction:( b:OUT, deserialize?:any ) => IN, 
@@ -46,7 +46,7 @@ export interface propertiesJsonMapping<IN extends object,OUT extends object>{
 export interface propertiesSpecialRecordArrayMapping<IN extends object,OUT extends object> extends propertyJSONInnerOptions<IN,OUT>{
 	
 	/**what scheme this belongs to */
-	scheme?:string,
+	scheme?:string[] | string ,
 
 	/** 
 	 * what is the key on the object, that should be used as record key,
@@ -55,14 +55,14 @@ export interface propertiesSpecialRecordArrayMapping<IN extends object,OUT exten
 	KeyPropertyName:string,
 }
 export interface propertiesJsonObject {
-	scheme?:string,
+	scheme?:string[] | string ,
 	onBeforeSerialization?:(self:any) => any,
 	onAfterDeSerialization?: ( self:any ) => any
 }
 
 export interface JSONPropertyOptions {
 	/**what scheme this property belongs to */
-	scheme?:string, 
+	scheme?:string[] | string , 
 	
 	/** what name its going out as and coming in as */
 	name?: string ,	
@@ -80,37 +80,57 @@ export function JsonProperty( option?:propertyJSONInnerOptions<any,any> ) {
 
 	return function (target: any, propertyKey: string ) {
 
-		let scheme = option?.scheme ?? BASE_SCHEME;
-		setMetadata( JSON_TAGS.JSON_PROPERTY , true		, target, propertyKey, scheme );
-		if(!option){
-			return;
-		} 
-
-		if(option.forceBaseType){
-			switch(option.forceBaseType){
-				case JSON_BASETYPES.string: 
-				case JSON_BASETYPES.number:
-				case JSON_BASETYPES.bool:	
-					setMetadata( 	JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE	,	option.forceBaseType,	target,	propertyKey, scheme 	);
+		let schemes;
+		if (!option?.scheme){
+			schemes = [BASE_SCHEME];
+		}
+		else if ( Array.isArray(option.scheme) ){
+			if(option.scheme.length == 0){
+				schemes = [BASE_SCHEME];
+			}else{
+				schemes = option.scheme;
 			}
 		}
+		else{
+			schemes = [option.scheme];
+		}
 
-		if(option.isArray){
-			setMetadata( JSON_TAGS.JSON_PROPERTY_FORCE_ARRAY, true	, target, propertyKey , scheme);
-		}	
-
-		if(option.name){
-			setMetadata( JSON_TAGS.JSON_PROPERTY_NAME_MAP_IN, propertyKey	, target, option.name, scheme);
-			setMetadata( JSON_TAGS.JSON_PROPERTY_NAME_MAP_OUT, option.name	, target, propertyKey , scheme);
-		}	
-
-		if(option.mappingFunctions){
-			setMetadata( JSON_TAGS.JSON_PROPERTY_FUNC_MAP_IN, option.mappingFunctions.in	, target, propertyKey , scheme);
-			setMetadata( JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT, option.mappingFunctions.out	, target, propertyKey , scheme);
-		}	
  
-		if(option.type){
-			setMetadata( JSON_TAGS.JSON_PROPERTY_TYPED		, option.type	, target, propertyKey , scheme);
+
+		for (let i = 0; i < schemes.length; i++) {
+			const scheme = schemes[i];
+	
+			setMetadata( JSON_TAGS.JSON_PROPERTY , true		, target, propertyKey, scheme );
+			if(!option){
+				return;
+			} 
+
+			if(option.forceBaseType){
+				switch(option.forceBaseType){
+					case JSON_BASETYPES.string: 
+					case JSON_BASETYPES.number:
+					case JSON_BASETYPES.bool:	
+						setMetadata( 	JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE	,	option.forceBaseType,	target,	propertyKey, scheme 	);
+				}
+			}
+
+			if(option.isArray){
+				setMetadata( JSON_TAGS.JSON_PROPERTY_FORCE_ARRAY, true	, target, propertyKey , scheme);
+			}	
+
+			if(option.name){
+				setMetadata( JSON_TAGS.JSON_PROPERTY_NAME_MAP_IN, propertyKey	, target, option.name, scheme);
+				setMetadata( JSON_TAGS.JSON_PROPERTY_NAME_MAP_OUT, option.name	, target, propertyKey , scheme);
+			}	
+
+			if(option.mappingFunctions){
+				setMetadata( JSON_TAGS.JSON_PROPERTY_FUNC_MAP_IN, option.mappingFunctions.in	, target, propertyKey , scheme);
+				setMetadata( JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT, option.mappingFunctions.out	, target, propertyKey , scheme);
+			}	
+	
+			if(option.type){
+				setMetadata( JSON_TAGS.JSON_PROPERTY_TYPED		, option.type	, target, propertyKey , scheme);
+			}
 		}
 		
 	};
@@ -288,20 +308,28 @@ function cleanObjectOptions( option?:propertiesJsonObject ){
 		option.onAfterDeSerialization = ( o ) => {};
 	}
 
-	if(option.scheme == '')
-		option.scheme = undefined;
-	option.scheme = option.scheme ?? BASE_SCHEME;
+	if(!option.scheme || option.scheme.length == 0)
+		option.scheme = [BASE_SCHEME];
+ 
 	return option;
 }
 export function JsonObject( option : propertiesJsonObject){
 	option = cleanObjectOptions(option);
 	return function (target: any ) {
 		
-		if(option.onAfterDeSerialization)
-			setOwnMetaData( JSON_TAGS.JSON_OBJECT_ON_AFTER_DE_SERIALIZATION	, target , option.onAfterDeSerialization , option.scheme );
+		let schemes = option?.scheme ;
+		if (!schemes ||schemes.length==0)
+			schemes = [BASE_SCHEME];
 
-		if(option.onBeforeSerialization)
-			setOwnMetaData( JSON_TAGS.JSON_OBJECT_ON_BEFORE_SERIALIZATION	, target , option.onBeforeSerialization , option.scheme );
+		for (let i = 0; i < schemes.length; i++) {
+			const scheme = schemes[i];
 
+			if(option.onAfterDeSerialization)
+				setOwnMetaData( JSON_TAGS.JSON_OBJECT_ON_AFTER_DE_SERIALIZATION	, target , option.onAfterDeSerialization , scheme);
+
+			if(option.onBeforeSerialization)
+				setOwnMetaData( JSON_TAGS.JSON_OBJECT_ON_BEFORE_SERIALIZATION	, target , option.onBeforeSerialization , scheme );
+
+		}
 	}
 }
