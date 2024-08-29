@@ -1,17 +1,14 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.JSONHandler = void 0;
-var JsonModuleBaseFunction_1 = require("./JsonModuleBaseFunction");
-var JsonModuleConstants_1 = require("./JsonModuleConstants");
+import { getMetadata, getOwnMetaData, getOwnMetaDataKeys, getMetaDataKeys } from "./JsonModuleBaseFunction";
+import { BASE_SCHEME, JSON_BASETYPES, JSON_TAGS, NoOutput } from "./JsonModuleConstants";
 var JSONHandler = /** @class */ (function () {
     function JSONHandler() {
     }
     JSONHandler.serialize = function (obj, scheme) {
-        if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
+        if (scheme === void 0) { scheme = BASE_SCHEME; }
         return JSON.stringify(JSONHandler.serializeRaw(obj, scheme));
     };
     JSONHandler.serializeRaw = function (obj, scheme) {
-        if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
+        if (scheme === void 0) { scheme = BASE_SCHEME; }
         if (!obj) {
             return obj;
         }
@@ -26,11 +23,11 @@ var JSONHandler = /** @class */ (function () {
         // serializedObject is a new object, without non Jsonproperties
         var result = {};
         // EVENT BFORE SERIALIZATION
-        var ObjectMeta = (0, JsonModuleBaseFunction_1.getOwnMetaDataKeys)(obj);
+        var ObjectMeta = getOwnMetaDataKeys(obj);
         // if there is an After serialize function get it and run it. 
-        if (ObjectMeta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_BEFORE_SERIALIZATION)) {
+        if (ObjectMeta.includes(JSON_TAGS.JSON_OBJECT_ON_BEFORE_SERIALIZATION)) {
             // get meta data function and run it on the resulting object
-            var f = (0, JsonModuleBaseFunction_1.getOwnMetaData)(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_BEFORE_SERIALIZATION, obj, scheme);
+            var f = getOwnMetaData(JSON_TAGS.JSON_OBJECT_ON_BEFORE_SERIALIZATION, obj, scheme);
             if (f)
                 f(obj);
         }
@@ -40,24 +37,24 @@ var JSONHandler = /** @class */ (function () {
         var _loop_1 = function (i) {
             // get basic properties
             var key = propertyNames[i];
-            var meta = (0, JsonModuleBaseFunction_1.getMetaDataKeys)(obj, key, scheme);
+            var meta = getMetaDataKeys(obj, key, scheme);
             //let meta = Reflect.getMetadataKeys( obj , key );	
             // check if the scheme we are about to export have The Property in it
-            if (!meta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY)) {
+            if (!meta.includes(JSON_TAGS.JSON_PROPERTY)) {
                 return "continue";
             }
             // create the name of the property, but if there is a mapped out name, get that instead
             var PropertyName = key;
-            if (meta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_NAME_MAP_OUT)) {
-                PropertyName = (0, JsonModuleBaseFunction_1.getMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_NAME_MAP_OUT, obj, key, scheme);
+            if (meta.includes(JSON_TAGS.JSON_PROPERTY_NAME_MAP_OUT)) {
+                PropertyName = getMetadata(JSON_TAGS.JSON_PROPERTY_NAME_MAP_OUT, obj, key, scheme);
             }
             // if there is a mapping function
             var out = null;
-            if (meta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT)) {
-                var outFunction = (0, JsonModuleBaseFunction_1.getMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT, obj, key, scheme);
+            if (meta.includes(JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT)) {
+                var outFunction = getMetadata(JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT, obj, key, scheme);
                 out = outFunction(obj[key], function (o) { return JSONHandler.serializeRaw(o, scheme); });
             }
-            else if (meta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FORCE_ARRAY)) {
+            else if (meta.includes(JSON_TAGS.JSON_PROPERTY_FORCE_ARRAY)) {
                 out = [];
                 if (obj[key]) {
                     if (Array.isArray(obj[key])) {
@@ -75,10 +72,10 @@ var JSONHandler = /** @class */ (function () {
                 out = JSONHandler.serializeRaw(obj[key], scheme);
             }
             // HANDLE Force Typing
-            if (meta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE)) {
-                var typekey_1 = (0, JsonModuleBaseFunction_1.getMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE, obj, key, scheme);
+            if (meta.includes(JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE)) {
+                var typekey_1 = getMetadata(JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE, obj, key, scheme);
                 var convFunc = function (e) { return JSONHandler.deserializeAndForceSimple(typekey_1, e); };
-                if (meta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FORCE_ARRAY)) {
+                if (meta.includes(JSON_TAGS.JSON_PROPERTY_FORCE_ARRAY)) {
                     var temp = out;
                     var newout = [];
                     for (var i_1 = 0; i_1 < temp.length; i_1++) {
@@ -98,9 +95,9 @@ var JSONHandler = /** @class */ (function () {
         return result;
     };
     JSONHandler.deserialize = function (target, json, scheme, writeOut) {
-        if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
+        if (scheme === void 0) { scheme = BASE_SCHEME; }
         if (!writeOut) {
-            writeOut = JsonModuleConstants_1.NoOutput;
+            writeOut = NoOutput;
         }
         var type = typeof json;
         if (type == 'string') {
@@ -121,10 +118,10 @@ var JSONHandler = /** @class */ (function () {
         //let typekey = Reflect.getMetadata( JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE , obj , key )
         var convFunc = function (e) { return e; };
         switch (typekey) {
-            case JsonModuleConstants_1.JSON_BASETYPES.bool:
+            case JSON_BASETYPES.bool:
                 convFunc = function (input) { return Boolean(input); };
                 break;
-            case JsonModuleConstants_1.JSON_BASETYPES.string:
+            case JSON_BASETYPES.string:
                 if (obj == null)
                     return "";
                 if (typeof obj == 'object') {
@@ -132,7 +129,7 @@ var JSONHandler = /** @class */ (function () {
                 }
                 convFunc = function (input) { return String(input); };
                 break;
-            case JsonModuleConstants_1.JSON_BASETYPES.number:
+            case JSON_BASETYPES.number:
                 if (obj == null) {
                     return 0;
                 }
@@ -149,7 +146,7 @@ var JSONHandler = /** @class */ (function () {
         return out;
     };
     JSONHandler.deserializeRaw = function (target, obj, scheme, parentName) {
-        if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
+        if (scheme === void 0) { scheme = BASE_SCHEME; }
         if (parentName === void 0) { parentName = 'FIRST'; }
         if (!obj) {
             return obj;
@@ -163,27 +160,27 @@ var JSONHandler = /** @class */ (function () {
             // get basic properties
             var key = propertyNames[i];
             var inKey = key;
-            var meta = (0, JsonModuleBaseFunction_1.getMetaDataKeys)(target, key, scheme);
+            var meta = getMetaDataKeys(target, key, scheme);
             var PropertyName = key;
             if (meta.length == 0) {
                 return "continue";
             }
             // if this is an Out key, convert it to an IN Key, so we can get the right meta data. 
-            if (meta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_NAME_MAP_IN)) {
+            if (meta.includes(JSON_TAGS.JSON_PROPERTY_NAME_MAP_IN)) {
                 // get out key from the in Key
-                key = (0, JsonModuleBaseFunction_1.getMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_NAME_MAP_IN, prototype, key, scheme);
+                key = getMetadata(JSON_TAGS.JSON_PROPERTY_NAME_MAP_IN, prototype, key, scheme);
                 // in case that a key belonged to another scheme, then the key is undefined
                 //	if(key==undefined){
                 //		continue;
                 //	} 
-                meta = (0, JsonModuleBaseFunction_1.getMetaDataKeys)(target, key, scheme);
+                meta = getMetaDataKeys(target, key, scheme);
                 PropertyName = key;
             }
             // Get the constructor if there is any, Generics take priority
             var out = null;
-            var constr = (0, JsonModuleBaseFunction_1.getMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_TYPED, prototype, key, scheme);
-            if (meta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FUNC_MAP_IN)) {
-                var inFunction = (0, JsonModuleBaseFunction_1.getMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FUNC_MAP_IN, prototype, key, scheme);
+            var constr = getMetadata(JSON_TAGS.JSON_PROPERTY_TYPED, prototype, key, scheme);
+            if (meta.includes(JSON_TAGS.JSON_PROPERTY_FUNC_MAP_IN)) {
+                var inFunction = getMetadata(JSON_TAGS.JSON_PROPERTY_FUNC_MAP_IN, prototype, key, scheme);
                 if (constr) {
                     out = inFunction(obj[inKey], function (obj) {
                         var res = JSONHandler.deserializeRaw(constr, obj, scheme, key);
@@ -194,7 +191,7 @@ var JSONHandler = /** @class */ (function () {
                     out = inFunction(obj[inKey], function (obj) { return obj; });
                 }
             }
-            else if (meta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FORCE_ARRAY)) {
+            else if (meta.includes(JSON_TAGS.JSON_PROPERTY_FORCE_ARRAY)) {
                 // if it needs deserializing
                 var convert_1 = function (e) { return e; };
                 if (constr) {
@@ -205,7 +202,7 @@ var JSONHandler = /** @class */ (function () {
                 }
                 // if it needs to be converted to a simple type. EVEN after deserializing
                 var convert2 = function (e, typekey) { return convert_1(e); };
-                if (meta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE)) {
+                if (meta.includes(JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE)) {
                     convert2 = function (e, typekey) {
                         return JSONHandler.deserializeAndForceSimple(typekey, e);
                     };
@@ -214,7 +211,7 @@ var JSONHandler = /** @class */ (function () {
                     // as stated above
                 }
                 out = [];
-                var typekey = (0, JsonModuleBaseFunction_1.getMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE, prototype, key, scheme);
+                var typekey = getMetadata(JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE, prototype, key, scheme);
                 for (var j = 0; j < obj[inKey].length; j++) {
                     var e = obj[inKey][j];
                     var r = convert2(e, typekey);
@@ -235,11 +232,11 @@ var JSONHandler = /** @class */ (function () {
             _loop_2(i);
         }
         // EVENT ON AFTER DESERIALIZE
-        var ObjectMeta = (0, JsonModuleBaseFunction_1.getOwnMetaDataKeys)(result);
+        var ObjectMeta = getOwnMetaDataKeys(result);
         // if there is an After serialize function get it and run it. 
-        if (ObjectMeta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_AFTER_DE_SERIALIZATION)) {
+        if (ObjectMeta.includes(JSON_TAGS.JSON_OBJECT_ON_AFTER_DE_SERIALIZATION)) {
             // get meta data function and run it on the resulting object
-            var f = (0, JsonModuleBaseFunction_1.getOwnMetaData)(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_AFTER_DE_SERIALIZATION, result, scheme);
+            var f = getOwnMetaData(JSON_TAGS.JSON_OBJECT_ON_AFTER_DE_SERIALIZATION, result, scheme);
             if (f)
                 f(result);
         }
@@ -247,5 +244,5 @@ var JSONHandler = /** @class */ (function () {
     };
     return JSONHandler;
 }());
-exports.JSONHandler = JSONHandler;
+export { JSONHandler };
 //# sourceMappingURL=JsonHandler.js.map

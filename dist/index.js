@@ -1,20 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.JsonObject = exports.JSONHandler = exports.JsonMappingRecordInArrayOut = exports.JsonMapping = exports.JsonArrayClassTyped = exports.JsonArrayBoolean = exports.JsonArrayString = exports.JsonArrayNumber = exports.JsonClassTyped = exports.JsonBoolean = exports.JsonString = exports.JsonNumber = exports.JsonArrayProperty = exports.JsonProperty = void 0;
-var Decorators_1 = require("./Decorators");
-Object.defineProperty(exports, "JsonProperty", { enumerable: true, get: function () { return Decorators_1.JsonProperty; } });
-Object.defineProperty(exports, "JsonArrayProperty", { enumerable: true, get: function () { return Decorators_1.JsonArrayProperty; } });
-Object.defineProperty(exports, "JsonNumber", { enumerable: true, get: function () { return Decorators_1.JsonNumber; } });
-Object.defineProperty(exports, "JsonString", { enumerable: true, get: function () { return Decorators_1.JsonString; } });
-Object.defineProperty(exports, "JsonBoolean", { enumerable: true, get: function () { return Decorators_1.JsonBoolean; } });
-Object.defineProperty(exports, "JsonClassTyped", { enumerable: true, get: function () { return Decorators_1.JsonClassTyped; } });
-Object.defineProperty(exports, "JsonArrayNumber", { enumerable: true, get: function () { return Decorators_1.JsonArrayNumber; } });
-Object.defineProperty(exports, "JsonArrayString", { enumerable: true, get: function () { return Decorators_1.JsonArrayString; } });
-Object.defineProperty(exports, "JsonArrayBoolean", { enumerable: true, get: function () { return Decorators_1.JsonArrayBoolean; } });
-Object.defineProperty(exports, "JsonArrayClassTyped", { enumerable: true, get: function () { return Decorators_1.JsonArrayClassTyped; } });
-Object.defineProperty(exports, "JsonMapping", { enumerable: true, get: function () { return Decorators_1.JsonMapping; } });
-Object.defineProperty(exports, "JsonMappingRecordInArrayOut", { enumerable: true, get: function () { return Decorators_1.JsonMappingRecordInArrayOut; } });
-Object.defineProperty(exports, "JsonObject", { enumerable: true, get: function () { return Decorators_1.JsonObject; } });
-var JsonHandler_1 = require("./JsonHandler");
-Object.defineProperty(exports, "JSONHandler", { enumerable: true, get: function () { return JsonHandler_1.JSONHandler; } });
+import { JsonProperty, JsonArrayProperty, JsonNumber, JsonString, JsonBoolean, JsonClassTyped, JsonArrayNumber, JsonArrayString, JsonArrayBoolean, JsonArrayClassTyped, JsonMapping, JsonMappingRecordInArrayOut, JsonObject } from './Decorators';
+import { JSONHandler, } from './JsonHandler';
+import { BASE_SCHEME } from './JsonModuleConstants';
+export { JsonProperty, JsonArrayProperty, JsonNumber, JsonString, JsonBoolean, JsonClassTyped, JsonArrayNumber, JsonArrayString, JsonArrayBoolean, JsonArrayClassTyped, JsonMapping, JsonMappingRecordInArrayOut, JSONHandler, JsonObject };
+export { BASE_SCHEME };
 //# sourceMappingURL=index.js.map

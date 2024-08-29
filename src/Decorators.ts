@@ -6,8 +6,8 @@ function cleanNonAccesibleSettings( option?:JSONPropertyOptions ){
 	if(!option)
 		return {};
 
-	option.scheme = option.scheme == '' ? BASE_SCHEME : option.scheme;
-	option.scheme = option.scheme ?? BASE_SCHEME;
+	if(!option.scheme || option.scheme.length == 0)
+		option.scheme = [BASE_SCHEME];
 
 	(option as any).mappingFunctions	= null;
 	(option as any).type 				= null;
@@ -16,17 +16,7 @@ function cleanNonAccesibleSettings( option?:JSONPropertyOptions ){
 	return option;
 }
 
-export interface JSONPropertyOptions {
-	/**what scheme this property belongs to */
-	scheme?:string, 
-	
-	/** what name its going out as and coming in as */
-	name?: string ,	
-
-	/**if this should be forced to an array */
-	isArray?:boolean 
-}
-interface JSONInnerPropertyOptions<IN extends object,OUT extends object> extends JSONPropertyOptions{
+export interface propertyJSONInnerOptions<IN extends object,OUT extends object> extends JSONPropertyOptions{
 	
 	/**method to run on out and in. */
 	mappingFunctions? :{ out:( t:IN , serialize?:any ) => OUT , in:( b:OUT, deserialize?:any ) => IN } , 
@@ -37,6 +27,48 @@ interface JSONInnerPropertyOptions<IN extends object,OUT extends object> extends
 	/**if it should force the value to be a string|number|boolean */
 	forceBaseType?: false | keyof typeof JSON_BASETYPES 
 
+} 
+export interface propertiesJsonMapping<IN extends object,OUT extends object>{
+	
+	/**what scheme this belongs to */
+	scheme?:string[] | string , 
+
+	/**the function to operate the data, before going out */
+	inFunction:( b:OUT, deserialize?:any ) => IN, 
+
+	/** the function to operate the data, before going in */
+	outFunction:( t:IN , serialize?:any ) => OUT , 
+
+	/**if this should force the type (class) */
+	type? : Constructor<IN>, 
+	option? : propertyJSONInnerOptions<IN,OUT> 
+}
+export interface propertiesSpecialRecordArrayMapping<IN extends object,OUT extends object> extends propertyJSONInnerOptions<IN,OUT>{
+	
+	/**what scheme this belongs to */
+	scheme?:string[] | string ,
+
+	/** 
+	 * what is the key on the object, that should be used as record key,
+	 * This can also be a method, but must be a method with no parameters 
+	 */
+	KeyPropertyName:string,
+}
+export interface propertiesJsonObject {
+	scheme?:string[] | string ,
+	onBeforeSerialization?:(self:any) => any,
+	onAfterDeSerialization?: ( self:any ) => any
+}
+
+export interface JSONPropertyOptions {
+	/**what scheme this property belongs to */
+	scheme?:string[] | string , 
+	
+	/** what name its going out as and coming in as */
+	name?: string ,	
+
+	/**if this should be forced to an array */
+	isArray?:boolean 
 }
 
 
@@ -44,41 +76,61 @@ interface JSONInnerPropertyOptions<IN extends object,OUT extends object> extends
  * This is the base property, this is the property that other properties use.
  * it is recommended that you use the more specifik properties when possible
 */
-export function JsonProperty( option?:JSONInnerPropertyOptions<any,any> ) { 
+export function JsonProperty( option?:propertyJSONInnerOptions<any,any> ) { 
 
 	return function (target: any, propertyKey: string ) {
 
-		let scheme = option?.scheme ?? BASE_SCHEME;
-		setMetadata( JSON_TAGS.JSON_PROPERTY , true		, target, propertyKey, scheme );
-		if(!option){
-			return;
-		} 
-
-		if(option.forceBaseType){
-			switch(option.forceBaseType){
-				case JSON_BASETYPES.string: 
-				case JSON_BASETYPES.number:
-				case JSON_BASETYPES.bool:	
-					setMetadata( 	JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE	,	option.forceBaseType,	target,	propertyKey, scheme 	);
+		let schemes;
+		if (!option?.scheme){
+			schemes = [BASE_SCHEME];
+		}
+		else if ( Array.isArray(option.scheme) ){
+			if(option.scheme.length == 0){
+				schemes = [BASE_SCHEME];
+			}else{
+				schemes = option.scheme;
 			}
 		}
+		else{
+			schemes = [option.scheme];
+		}
 
-		if(option.isArray){
-			setMetadata( JSON_TAGS.JSON_PROPERTY_FORCE_ARRAY, true	, target, propertyKey , scheme);
-		}	
-
-		if(option.name){
-			setMetadata( JSON_TAGS.JSON_PROPERTY_NAME_MAP_IN, propertyKey	, target, option.name, scheme);
-			setMetadata( JSON_TAGS.JSON_PROPERTY_NAME_MAP_OUT, option.name	, target, propertyKey , scheme);
-		}	
-
-		if(option.mappingFunctions){
-			setMetadata( JSON_TAGS.JSON_PROPERTY_FUNC_MAP_IN, option.mappingFunctions.in	, target, propertyKey , scheme);
-			setMetadata( JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT, option.mappingFunctions.out	, target, propertyKey , scheme);
-		}	
  
-		if(option.type){
-			setMetadata( JSON_TAGS.JSON_PROPERTY_TYPED		, option.type	, target, propertyKey , scheme);
+
+		for (let i = 0; i < schemes.length; i++) {
+			const scheme = schemes[i];
+	
+			setMetadata( JSON_TAGS.JSON_PROPERTY , true		, target, propertyKey, scheme );
+			if(!option){
+				return;
+			} 
+
+			if(option.forceBaseType){
+				switch(option.forceBaseType){
+					case JSON_BASETYPES.string: 
+					case JSON_BASETYPES.number:
+					case JSON_BASETYPES.bool:	
+						setMetadata( 	JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE	,	option.forceBaseType,	target,	propertyKey, scheme 	);
+				}
+			}
+
+			if(option.isArray){
+				setMetadata( JSON_TAGS.JSON_PROPERTY_FORCE_ARRAY, true	, target, propertyKey , scheme);
+			}	
+
+			if(option.name){
+				setMetadata( JSON_TAGS.JSON_PROPERTY_NAME_MAP_IN, propertyKey	, target, option.name, scheme);
+				setMetadata( JSON_TAGS.JSON_PROPERTY_NAME_MAP_OUT, option.name	, target, propertyKey , scheme);
+			}	
+
+			if(option.mappingFunctions){
+				setMetadata( JSON_TAGS.JSON_PROPERTY_FUNC_MAP_IN, option.mappingFunctions.in	, target, propertyKey , scheme);
+				setMetadata( JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT, option.mappingFunctions.out	, target, propertyKey , scheme);
+			}	
+	
+			if(option.type){
+				setMetadata( JSON_TAGS.JSON_PROPERTY_TYPED		, option.type	, target, propertyKey , scheme);
+			}
 		}
 		
 	};
@@ -89,7 +141,7 @@ export function JsonProperty( option?:JSONInnerPropertyOptions<any,any> ) {
 */
 export function JsonArrayProperty	( option?:JSONPropertyOptions ){
 	option = cleanNonAccesibleSettings(option); 
-	( option as JSONInnerPropertyOptions<any,any>).isArray 		 = true;
+	( option as propertyJSONInnerOptions<any,any>).isArray 		 = true;
 	return JsonProperty(option);
 }
 
@@ -98,7 +150,7 @@ export function JsonArrayProperty	( option?:JSONPropertyOptions ){
  */
 export function JsonNumber	( option?:JSONPropertyOptions ){
 	option = cleanNonAccesibleSettings(option);
-	( option as JSONInnerPropertyOptions<any,any>).forceBaseType = JSON_BASETYPES.number
+	( option as propertyJSONInnerOptions<any,any>).forceBaseType = JSON_BASETYPES.number
 	return JsonProperty(option);
 }
 
@@ -108,7 +160,7 @@ export function JsonNumber	( option?:JSONPropertyOptions ){
  */
 export function JsonString	( option?:JSONPropertyOptions ){
 	option = cleanNonAccesibleSettings(option);
-	( option as JSONInnerPropertyOptions<any,any>).forceBaseType = JSON_BASETYPES.string
+	( option as propertyJSONInnerOptions<any,any>).forceBaseType = JSON_BASETYPES.string
 	return JsonProperty(option);
 }
 
@@ -118,7 +170,7 @@ export function JsonString	( option?:JSONPropertyOptions ){
  */
 export function JsonBoolean	( option?:JSONPropertyOptions ){
 	option = cleanNonAccesibleSettings(option);
-	( option as JSONInnerPropertyOptions<any,any>).forceBaseType = JSON_BASETYPES.bool
+	( option as propertyJSONInnerOptions<any,any>).forceBaseType = JSON_BASETYPES.bool
 	return JsonProperty(option);
 }
 
@@ -130,7 +182,7 @@ export function JsonBoolean	( option?:JSONPropertyOptions ){
  */
 export function JsonClassTyped<T extends object>( type : Constructor<T> , option?:JSONPropertyOptions ){
 	option = cleanNonAccesibleSettings(option);
-	( option as JSONInnerPropertyOptions<any,any>).type 	= type;
+	( option as propertyJSONInnerOptions<any,any>).type 	= type;
 	return JsonProperty(option);
 }
 
@@ -139,8 +191,8 @@ export function JsonClassTyped<T extends object>( type : Constructor<T> , option
  */
 export function JsonArrayNumber	( option?:JSONPropertyOptions ){
 	option = cleanNonAccesibleSettings(option);
-	( option as JSONInnerPropertyOptions<any,any>).forceBaseType = JSON_BASETYPES.number;
-	( option as JSONInnerPropertyOptions<any,any>).isArray 		 = true;
+	( option as propertyJSONInnerOptions<any,any>).forceBaseType = JSON_BASETYPES.number;
+	( option as propertyJSONInnerOptions<any,any>).isArray 		 = true;
 	return JsonProperty(option);
 }
 
@@ -149,8 +201,8 @@ export function JsonArrayNumber	( option?:JSONPropertyOptions ){
  */
 export function JsonArrayString	( option?:JSONPropertyOptions ){
 	option = cleanNonAccesibleSettings(option);
-	( option as JSONInnerPropertyOptions<any,any>).forceBaseType = JSON_BASETYPES.string;
-	( option as JSONInnerPropertyOptions<any,any>).isArray 		 = true;
+	( option as propertyJSONInnerOptions<any,any>).forceBaseType = JSON_BASETYPES.string;
+	( option as propertyJSONInnerOptions<any,any>).isArray 		 = true;
 	return JsonProperty(option);
 }
 
@@ -159,8 +211,8 @@ export function JsonArrayString	( option?:JSONPropertyOptions ){
  */
 export function JsonArrayBoolean	( option?:JSONPropertyOptions ){
 	option = cleanNonAccesibleSettings(option);
-	( option as JSONInnerPropertyOptions<any,any>).forceBaseType = JSON_BASETYPES.bool;
-	( option as JSONInnerPropertyOptions<any,any>).isArray 		 = true;
+	( option as propertyJSONInnerOptions<any,any>).forceBaseType = JSON_BASETYPES.bool;
+	( option as propertyJSONInnerOptions<any,any>).isArray 		 = true;
 	return JsonProperty(option);
 }
 
@@ -171,69 +223,42 @@ export function JsonArrayBoolean	( option?:JSONPropertyOptions ){
  */
 export function JsonArrayClassTyped<T extends object>( type : Constructor<T> , option?:JSONPropertyOptions ){
 	option = cleanNonAccesibleSettings(option);
-	( option as JSONInnerPropertyOptions<any,any>).isArray 		= true;
-	( option as JSONInnerPropertyOptions<any,any>).type			= type;
+	( option as propertyJSONInnerOptions<any,any>).isArray 		= true;
+	( option as propertyJSONInnerOptions<any,any>).type			= type;
 	return JsonProperty(option);
 }
 
 
-// Mappings
-interface JsonMappingParameters<IN extends object,OUT extends object>{
-	
-	/**what scheme this belongs to */
-	scheme?:string, 
-
-	/**the function to operate the data, before going out */
-	inFunction:( b:OUT, deserialize?:any ) => IN, 
-
-	/** the function to operate the data, before going in */
-	outFunction:( t:IN , serialize?:any ) => OUT , 
-
-	/**if this should force the type (class) */
-	type? : Constructor<IN>, 
-	option? : JSONInnerPropertyOptions<IN,OUT> 
-}
 
 
 /**
  * This is a property that helps ease mapping something in and out
  */
-export function JsonMapping<IN extends object,OUT extends object>( params : JsonMappingParameters<IN,OUT> ){
+export function JsonMapping<IN extends object,OUT extends object>( params : propertiesJsonMapping<IN,OUT> ){
 	// clean the input.
-	let option : JSONInnerPropertyOptions<IN,OUT> = cleanNonAccesibleSettings(params.option ?? ({} as JSONInnerPropertyOptions<IN,OUT>)) as JSONInnerPropertyOptions<IN,OUT>;
+	let option : propertyJSONInnerOptions<IN,OUT> = cleanNonAccesibleSettings(params.option ?? ({} as propertyJSONInnerOptions<IN,OUT>)) as propertyJSONInnerOptions<IN,OUT>;
 	
 	// set the type
 	if(params.type)
 		option.type = params.type;
 	
 	// Set mapping functions 
-	(option as JSONInnerPropertyOptions<IN,OUT>).mappingFunctions = {
+	(option as propertyJSONInnerOptions<IN,OUT>).mappingFunctions = {
 		out:params.outFunction,
 		in:params.inFunction, 
 	}
 	return JsonProperty(option);
 }
 
-interface specialRecordArrayMappingProperties<IN extends object,OUT extends object> extends JSONInnerPropertyOptions<IN,OUT>{
-	
-	/**what scheme this belongs to */
-	scheme?:string,
-
-	/** 
-	 * what is the key on the object, that should be used as record key,
-	 * This can also be a method, but must be a method with no parameters 
-	 */
-	KeyPropertyName:string,
-}
 
 
 /**
  * This is a property to ease the action of having a record in the system but an array in the json
  */
-export function JsonMappingRecordInArrayOut<IN extends object,OUT extends object>( option : specialRecordArrayMappingProperties<IN,OUT> ){
+export function JsonMappingRecordInArrayOut<IN extends object,OUT extends object>( option : propertiesSpecialRecordArrayMapping<IN,OUT> ){
 	// clean the input.
 	let type = option.type;
-	option = cleanNonAccesibleSettings(option ?? ({} as JSONInnerPropertyOptions<IN,OUT>)) as specialRecordArrayMappingProperties<IN,OUT>;
+	option = cleanNonAccesibleSettings(option ?? ({} as propertyJSONInnerOptions<IN,OUT>)) as propertiesSpecialRecordArrayMapping<IN,OUT>;
 	let outfunc = ( col : IN , s ) => { return Object.values(col).map( p => s(p) ) as OUT };
 	let infunc = ( col: OUT  , d ) => { 
 		let r = {};
@@ -274,12 +299,7 @@ export function JsonMappingRecordInArrayOut<IN extends object,OUT extends object
 	return JsonProperty(option);
 }
 
-interface JsonObjectProperties {
-	scheme?:string,
-	onBeforeSerialization?:(self:any) => any,
-	onAfterDeSerialization?: ( self:any ) => any
-}
-function cleanObjectOptions( option?:JsonObjectProperties ){
+function cleanObjectOptions( option?:propertiesJsonObject ){
 
 	if(!option)
 		option = {};
@@ -288,20 +308,28 @@ function cleanObjectOptions( option?:JsonObjectProperties ){
 		option.onAfterDeSerialization = ( o ) => {};
 	}
 
-	if(option.scheme == '')
-		option.scheme = undefined;
-	option.scheme = option.scheme ?? BASE_SCHEME;
+	if(!option.scheme || option.scheme.length == 0)
+		option.scheme = [BASE_SCHEME];
+ 
 	return option;
 }
-export function JsonObject( option : JsonObjectProperties){
+export function JsonObject( option : propertiesJsonObject){
 	option = cleanObjectOptions(option);
 	return function (target: any ) {
 		
-		if(option.onAfterDeSerialization)
-			setOwnMetaData( JSON_TAGS.JSON_OBJECT_ON_AFTER_DE_SERIALIZATION	, target , option.onAfterDeSerialization , option.scheme );
+		let schemes = option?.scheme ;
+		if (!schemes ||schemes.length==0)
+			schemes = [BASE_SCHEME];
 
-		if(option.onBeforeSerialization)
-			setOwnMetaData( JSON_TAGS.JSON_OBJECT_ON_BEFORE_SERIALIZATION	, target , option.onBeforeSerialization , option.scheme );
+		for (let i = 0; i < schemes.length; i++) {
+			const scheme = schemes[i];
 
+			if(option.onAfterDeSerialization)
+				setOwnMetaData( JSON_TAGS.JSON_OBJECT_ON_AFTER_DE_SERIALIZATION	, target , option.onAfterDeSerialization , scheme);
+
+			if(option.onBeforeSerialization)
+				setOwnMetaData( JSON_TAGS.JSON_OBJECT_ON_BEFORE_SERIALIZATION	, target , option.onBeforeSerialization , scheme );
+
+		}
 	}
 }
