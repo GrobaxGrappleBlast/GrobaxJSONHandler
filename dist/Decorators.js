@@ -17,7 +17,7 @@ function cleanNonAccesibleSettings(option) {
 */
 export function JsonProperty(option) {
     return function (target, propertyKey) {
-        var schemes;
+        let schemes;
         if (!(option === null || option === void 0 ? void 0 : option.scheme)) {
             schemes = [BASE_SCHEME];
         }
@@ -32,8 +32,8 @@ export function JsonProperty(option) {
         else {
             schemes = [option.scheme];
         }
-        for (var i = 0; i < schemes.length; i++) {
-            var scheme = schemes[i];
+        for (let i = 0; i < schemes.length; i++) {
+            const scheme = schemes[i];
             setMetadata(JSON_TAGS.JSON_PROPERTY, true, target, propertyKey, scheme);
             if (!option) {
                 return;
@@ -149,7 +149,7 @@ export function JsonArrayClassTyped(type, option) {
 export function JsonMapping(params) {
     var _a;
     // clean the input.
-    var option = cleanNonAccesibleSettings((_a = params.option) !== null && _a !== void 0 ? _a : {});
+    let option = cleanNonAccesibleSettings((_a = params.option) !== null && _a !== void 0 ? _a : {});
     // set the type
     if (params.type)
         option.type = params.type;
@@ -165,26 +165,26 @@ export function JsonMapping(params) {
  */
 export function JsonMappingRecordInArrayOut(option) {
     // clean the input.
-    var type = option.type;
+    let type = option.type;
     option = cleanNonAccesibleSettings(option !== null && option !== void 0 ? option : {});
-    var outfunc = function (col, s) { return Object.values(col).map(function (p) { return s(p); }); };
-    var infunc = function (col, d) {
-        var r = {};
+    let outfunc = (col, s) => { return Object.values(col).map(p => s(p)); };
+    let infunc = (col, d) => {
+        let r = {};
         // @ts-ignore
-        col.map(function (p) {
-            var o = d(p);
-            var v = o[option.KeyPropertyName];
+        col.map(p => {
+            let o = d(p);
+            let v = o[option.KeyPropertyName];
             if (typeof v == 'function') {
                 try {
                     v = o[option.KeyPropertyName]();
                     console.log(option.KeyPropertyName);
                     if (v === null || v === undefined) {
-                        throw new Error("after calling function ".concat(option.KeyPropertyName, " key value was '").concat(v, "' "));
+                        throw new Error(`after calling function ${option.KeyPropertyName} key value was '${v}' `);
                     }
                 }
                 catch (e) {
-                    var messageAddon = v.length > 0 ? ', Note that message must have 0 Arguments, that arent either optional or have default values' : '';
-                    var message = "Something went wrong with callign method '".concat(option.KeyPropertyName, "'").concat(messageAddon);
+                    let messageAddon = v.length > 0 ? ', Note that message must have 0 Arguments, that arent either optional or have default values' : '';
+                    let message = `Something went wrong with callign method '${option.KeyPropertyName}'${messageAddon}`;
                     console.error(e);
                     throw new Error(message);
                 }
@@ -207,7 +207,7 @@ function cleanObjectOptions(option) {
     if (!option)
         option = {};
     if (!option.onAfterDeSerialization) {
-        option.onAfterDeSerialization = function (o) { };
+        option.onAfterDeSerialization = (o) => { };
     }
     if (!option.scheme || option.scheme.length == 0)
         option.scheme = [BASE_SCHEME];
@@ -216,11 +216,11 @@ function cleanObjectOptions(option) {
 export function JsonObject(option) {
     option = cleanObjectOptions(option);
     return function (target) {
-        var schemes = option === null || option === void 0 ? void 0 : option.scheme;
+        let schemes = option === null || option === void 0 ? void 0 : option.scheme;
         if (!schemes || schemes.length == 0)
             schemes = [BASE_SCHEME];
-        for (var i = 0; i < schemes.length; i++) {
-            var scheme = schemes[i];
+        for (let i = 0; i < schemes.length; i++) {
+            const scheme = schemes[i];
             if (option.onAfterDeSerialization)
                 setOwnMetaData(JSON_TAGS.JSON_OBJECT_ON_AFTER_DE_SERIALIZATION, target, option.onAfterDeSerialization, scheme);
             if (option.onBeforeSerialization)

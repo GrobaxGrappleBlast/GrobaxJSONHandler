@@ -1,7 +1,7 @@
-export var BASE_SCHEME = '_base';
-export var NoOutput = {
-    outError: function (msg) { },
-    outLog: function (msg) { }
+export const BASE_SCHEME = '_base';
+export const NoOutput = {
+    outError(msg) { },
+    outLog(msg) { }
 };
 export var JSON_TAGS;
 (function (JSON_TAGS) {
