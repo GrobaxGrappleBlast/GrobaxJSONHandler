@@ -18,12 +18,17 @@
         "strictNullChecks": true,
         "importsNotUsedAsValues":"remove", 
 		"skipLibCheck":true,
-        "types": ["jest","node"],
+        "types": ["jest","node"], 
+		"emitDeclarationOnly":true,
+		"allowImportingTsExtensions":true,
         "lib": [
             "ES5",
             "ES6",
             "ES7"
-        ]
+        ],
+		"paths": {
+			"ttrpg-system-graph": ["node_modules/ttrpg-system-graph"]
+		},
     },
     "include": [
         "**/globals.d.ts"   ,
@@ -32,6 +37,7 @@
     "exclude": [
         "node_modules",
         "**/*.test.ts",
-        "**/dist/*"
+        "**/dist/*",
+		"**/test/**"
     ]
 }   

@@ -2,12 +2,12 @@
     "name": "grobax-json-handler",
     "version": "0.0.1",
     "description": "a json plugin for managing in and out json structures on classes them selves. ",
-	"main": "dist/index.js",             
-	"types": "dist/index.d.ts",          
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
     "files": [
-		"dist/**/*"
-	],
-	"type": "module",
+        "dist/**/*"
+    ],
+    "type": "module",
     "jest": {
         "preset": "ts-jest",
         "collectCoverage": true,
@@ -30,21 +30,24 @@
             "**/*.test.js"
         ]
     },
-    "scripts": {  
-        "build": "npx tsc", 
+    "scripts": {
+        "build": "npx tsc",
         "test": "jest --coverage"
     },
     "keywords": [],
     "author": "GrobaxGrappleblast",
     "devDependencies": {
         "@types/jest": "^29.5.12",
-        "@types/node": "^22.4.1", 
-        "builtin-modules": "4.0.0", 
+        "@types/node": "^22.4.1",
+        "builtin-modules": "4.0.0",
         "jest": "^29.7.0",
         "ts-jest": "^29.1.2",
         "tslib": "^2.6.3",
-        "typescript": "^5.5.4"
+        "typescript": "^5.5.4",
+		"svelte": "^3.49.0",
+		"ttrpg-system-graph": "github:GrobaxGrappleBlast/TTRPGSystemGraph"
     },
     "dependencies": { 
+	
     }
 }
