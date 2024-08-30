@@ -268,15 +268,13 @@ export function JsonMappingRecordInArrayOut<IN extends object,OUT extends object
 			let v = o[option.KeyPropertyName]; 
 			if(typeof v == 'function'){
 				try{
-					v = o[option.KeyPropertyName]();
-					console.log(option.KeyPropertyName);
+					v = o[option.KeyPropertyName](); 
 					if(v === null || v === undefined){
 						throw new Error(`after calling function ${option.KeyPropertyName} key value was '${v}' ` )
 					}
 				}catch(e){
 					let messageAddon = v.length > 0 ? ', Note that message must have 0 Arguments, that arent either optional or have default values': ''; 
-					let message = `Something went wrong with callign method '${option.KeyPropertyName}'${messageAddon}`
-					console.error(e);
+					let message = `Something went wrong with callign method '${option.KeyPropertyName}'${messageAddon}` 
 					throw new Error(message);
 				}
 			}

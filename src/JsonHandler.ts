@@ -2,14 +2,19 @@ import type { IOutputHandler } from "./JsonModuleConstants";
 import { getMetadata, getOwnMetaData, getOwnMetaDataKeys, hasMetaDataInScheme , getMetaDataKeys, hasMetaData , getPrototype , setPrototype} from "./JsonModuleBaseFunction";
 import { BASE_SCHEME, JSON_BASETYPES, JSON_TAGS, NoOutput, type Constructor } from "./JsonModuleConstants";
 				 
-
+var counter_jsonhandler = 0;
 export class JSONHandler{
  
 	public static serialize(obj: any  , scheme : string = BASE_SCHEME ): string {
-		return JSON.stringify(JSONHandler.serializeRaw(obj, scheme ));
+		const o = JSONHandler.serializeRaw(obj, scheme );
+		return JSON.stringify(o);
 	} 
 	private static serializeRaw( obj:any  , scheme : string = BASE_SCHEME , parentName = 'FIRST' ): object{
 
+
+		const prototypeDebug = Reflect.getPrototypeOf(obj);
+		
+		
 		if(!obj){
 			return obj;
 		}
@@ -76,8 +81,7 @@ export class JSONHandler{
 			// we do this in a funciton to minimize if statement chaos;
 			let typedconversion = ( v :any , ser : (v) => any ) => v;
 			if (meta.includes(JSON_TAGS.JSON_PROPERTY_TYPED)){
-				typedconversion = ( v :any , ser : (v) => any ) => {
-					
+				typedconversion = ( v :any , ser : (v) => any ) => { 
 					// get prototypes;
 					let during = (getMetadata(JSON_TAGS.JSON_PROPERTY_TYPED, obj , key , scheme)).prototype;
 					let before = getPrototype(v);
@@ -91,12 +95,21 @@ export class JSONHandler{
 					return r;
 				}
 			}
- 
+			
+			if( counter_jsonhandler > 100000000000 ){
+				console.log(prototypeDebug);
+			}
+
 			// if there is a mapping function
 			let out : any = null;
 			if ( meta.includes(JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT )){
 				let outFunction = getMetadata( JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT , obj , key  , scheme  ); 
-				out = outFunction(obj[key], (o)=>JSONHandler.serializeRaw( o, scheme ) );
+				
+				let a = (o , ser) => outFunction(o , ser );
+				let b = typedconversion;
+				
+				
+				out = outFunction(obj[key], (o)=>JSONHandler.serializeRaw( o, scheme  , parentName + ':' + key ) );
 			} 
 			else if( meta.includes(JSON_TAGS.JSON_PROPERTY_FORCE_ARRAY ) ){
 				out = [];
@@ -145,7 +158,9 @@ export class JSONHandler{
 			}  
 			result[PropertyName] = out;
 		}
-
+		if( counter_jsonhandler++ > 100000000000 ){
+			console.log(prototypeDebug);
+		}
 		return result;
 	}
 

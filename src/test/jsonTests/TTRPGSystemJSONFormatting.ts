@@ -10,8 +10,7 @@ import { BASE_SCHEME } from "../../JsonModuleConstants.ts";
 public name ;
 */
 // origins
-export class GrobJDerivedOrigin extends GrobDerivedOrigin {
-
+export class GrobJDerivedOrigin extends GrobDerivedOrigin { 
 	@JsonString()
 	public symbol: string; 
 	
@@ -19,18 +18,22 @@ export class GrobJDerivedOrigin extends GrobDerivedOrigin {
 	public originKey: string ;
 }
 
+
+
+
+
 // NODES  
-class GrobJDerivedNode extends GrobDerivedNode {
+export class GrobJDerivedNode extends GrobDerivedNode {
 	@JsonString() 
 	public name ;
 
 	@JsonString({name : 'calculationString'})
 	public calc:string;
 
-	@JsonArrayClassTyped(GrobDerivedOrigin,{name:'calcOrigins'})
-	public origins : GrobDerivedOrigin[];
+	@JsonArrayClassTyped(GrobJDerivedOrigin,{name:'calcOrigins'})
+	public origins : GrobJDerivedOrigin[];
 } 
-class GrobJFixedNode extends GrobFixedNode {
+export class GrobJFixedNode extends GrobFixedNode {
 
 	@JsonString() 
 	public name ;
@@ -39,23 +42,30 @@ class GrobJFixedNode extends GrobFixedNode {
 	public ___value:number
 }
 
-//  COLLECTIONS 
-export class GrobCollectionDerived extends GrobCollection<GrobDerivedNode>{
 
+
+
+
+//  COLLECTIONS 
+export class GrobCollectionDerived extends GrobCollection<GrobJDerivedNode>{ 
 	@JsonString() 
 	public name ;
 	
 	@JsonMappingRecordInArrayOut({KeyPropertyName:'getName', name:'data',type:GrobJDerivedNode })
-	nodes_names: Record<string, GrobDerivedNode> = {}
+	nodes_names: Record<string, GrobJDerivedNode> = {}
 } 
-export class GrobCollectionFixed extends GrobCollection<GrobFixedNode>{
+export class GrobCollectionFixed extends GrobCollection<GrobJFixedNode>{
 
 	@JsonString() 
 	public name ;
 
 	@JsonMappingRecordInArrayOut({KeyPropertyName:'getName', name:'data',type:GrobJFixedNode  })
-	nodes_names: Record<string, GrobFixedNode> = {}
+	nodes_names: Record<string, GrobJFixedNode> = {}
 }
+
+
+
+
 
 //  GROUPS 
 export class GrobGroupDerived extends GrobGroup<GrobDerivedNode>{
@@ -76,6 +86,11 @@ export class GrobGroupFixed extends GrobGroup<GrobFixedNode>{
 	collections_names: Record<string,GrobCollectionFixed> = {};
 
 }
+
+
+
+
+
  
 export class TTRPG_SCHEMES { 
 	static PREVIEW ='mini';

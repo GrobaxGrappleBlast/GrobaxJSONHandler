@@ -11,6 +11,7 @@ class MyClass{
 	public b = "12"
 }
 
+const out = false;
 
 test('Readme_Example_one', () => {
 
@@ -18,6 +19,7 @@ test('Readme_Example_one', () => {
 	let baseScheme = JSONHandler.serialize(obj);
 	let testScheme = JSONHandler.serialize(obj, 'testScheme' );
 
+	if(out){
 	console.log(`
 		baseScheme
 		**********
@@ -28,7 +30,7 @@ test('Readme_Example_one', () => {
 		testScheme
 		**********
 		${testScheme}
-	`)
+	`)}
 
 	/**
 		PRINTS OUT 
@@ -46,7 +48,8 @@ test('Readme_Example_one', () => {
 	let JSONT = `{"c":"12","firstNumber":"5","d":"100000","a":2,"b":13 }`;
 	let object1 = JSONHandler.deserialize(MyClass, JSONT);
 	let object2 = JSONHandler.deserialize(MyClass, JSONT, 'testScheme');
-
+	
+	if(out){
 	console.log(
 		`
 		Deserialized1
@@ -61,7 +64,7 @@ test('Readme_Example_one', () => {
 		**********
 		${JSON.stringify(object2)}
 		`
-	)
+	)}
 		  
 
 	/**
@@ -104,6 +107,7 @@ test('Readme_BooleanExample', () => {
 	let baseScheme = JSONHandler.serialize(obj);
 	let testScheme = JSONHandler.serialize(obj, 'testScheme' );
 
+	if(out){
 	console.log(`
 		baseScheme
 		**********
@@ -114,7 +118,7 @@ test('Readme_BooleanExample', () => {
 		testScheme
 		**********
 		${testScheme}
-	`)
+	`)}
 
 	/**
 		PRINTS OUT 
@@ -133,6 +137,8 @@ test('Readme_BooleanExample', () => {
 	let object1 = JSONHandler.deserialize(MyBooleanClass, JSONT);
 	let object2 = JSONHandler.deserialize(MyBooleanClass, JSONT, 'testScheme');
 
+
+	if(out){
 	console.log(
 		`
 		Deserialized1
@@ -147,7 +153,7 @@ test('Readme_BooleanExample', () => {
 		**********
 		${JSON.stringify(object2)}
 		`
-	)
+	)}
 		  
 	/**
 		PRINTS OUT 
@@ -189,6 +195,7 @@ test('Readme_NumberExample', () => {
 	let baseScheme = JSONHandler.serialize(obj);
 	let testScheme = JSONHandler.serialize(obj, 'testScheme' );
 
+	if(out){
 	console.log(`
 		baseScheme
 		**********
@@ -199,7 +206,7 @@ test('Readme_NumberExample', () => {
 		testScheme
 		**********
 		${testScheme}
-	`)
+	`)}
 
 	/**
 		PRINTS OUT 
@@ -217,6 +224,9 @@ test('Readme_NumberExample', () => {
 	let JSONT = `{"c":"12","isThisABoolean":"falsesssy","d":"100000","a":2,"b":13 }`;
 	let object1 = JSONHandler.deserialize(MyNumberClass, JSONT);
 	let object2 = JSONHandler.deserialize(MyNumberClass, JSONT, 'testScheme'); 
+
+
+	if(out){
 	console.log(
 		`
 		Deserialized1
@@ -231,7 +241,7 @@ test('Readme_NumberExample', () => {
 		**********
 		${JSON.stringify(object2)}
 		`
-	)
+	)}
 		  
 
 	/**
@@ -271,6 +281,7 @@ test('Readme_StringExample', () => {
 	let baseScheme = JSONHandler.serialize(obj);
 	let testScheme = JSONHandler.serialize(obj, 'testScheme' );
 
+	if(out){
 	console.log(`
 		baseScheme
 		**********
@@ -281,7 +292,7 @@ test('Readme_StringExample', () => {
 		testScheme
 		**********
 		${testScheme}
-	`)
+	`)}
 
 	/**
 		PRINTS OUT 
@@ -299,6 +310,7 @@ test('Readme_StringExample', () => {
 	let object1 = JSONHandler.deserialize(MyStringClass, JSONT);
 	let object2 = JSONHandler.deserialize(MyStringClass, JSONT, 'testScheme');
 
+	if(out){
 	console.log(
 		`
 		Deserialized1
@@ -313,7 +325,7 @@ test('Readme_StringExample', () => {
 		**********
 		${JSON.stringify(object2)}
 		`
-	)
+	)}
 		  
 	/**
 		PRINTS OUT 

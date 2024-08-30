@@ -41,7 +41,7 @@ test('Test Collection Designer Derived Elements', () => {
 
 	// save it 
 	controller.saveCollection();
-
+ 
 	// SERIALIZE 
 	let json = JSONHandler.serialize(system);
 	let system2 = JSONHandler.deserialize( TTRPGSystemJSONFormatting , json );

@@ -1,10 +1,50 @@
 import { writable, type Writable , get } from "svelte/store"; 
 import { GrobDerivedNode, GrobNodeType, TTRPGSystem } from "ttrpg-system-graph";
-import './array-extensions';
+import './array-extensions.d.ts';
 const selAllInCollectionString = '- - Select all - -'; 
 type originRowData = {key: string, segments:(string|null)[] , active :boolean , testValue :number, inCalc:boolean, target: any  | null , isSelectAllTarget:boolean };
 type StaticMessageHandler = any;  
+function recursiveNameFinder( self, nameCalc : string, index : number = 0 ,arr : originRowData[] , res : any , deps : Record<string,GrobNodeType> ){
+				 
+	// ge values, and copy nameCalc by value (not reference). 
+	let currentName = nameCalc;
+	let nodes:GrobNodeType[];
+	let curr = arr[index];
 
+	// if we are done, return result
+	if (!curr){ 
+		if ( res.data.findIndex( p => p.name == currentName ) != -1 ){ 
+			throw new Error('Double Name, in names generated Detected');
+		}
+		res.data.push( {name:currentName, deps:deps } );
+		return;
+	}
+
+	// if this is a Select All Segment then get
+	if (curr.segments[2] == selAllInCollectionString){
+		const sys = (self.system as TTRPGSystem);  
+		let collection = sys.getCollection((curr.segments[0] as any),(curr.segments[1] as any));
+		let n : GrobNodeType[] = collection?.getNodes() ?? [];
+		nodes = n;
+	}
+
+	// else just add this name to the arr
+	else {
+		const sys = (self.system as TTRPGSystem);  
+		let collection = sys.getCollection((curr.segments[0] as any),(curr.segments[1] as any));
+		let n : GrobNodeType | undefined = collection?.getNode(curr.segments[2]);
+		nodes = n ? [ n ] : [];
+	}
+	
+	/// replace instring Part. 
+	nodes.forEach( node  => {
+		let currNameCalc = currentName.replace( curr.key , node.getName() ); 
+		let _deps = Object.assign({}, deps );
+		_deps[ curr.key ] = node;
+		recursiveNameFinder(self,currNameCalc, index + 1 ,arr,res, _deps)
+	});
+	
+}
 export class DerivedCollectionController {
 	 
 	public system:TTRPGSystem | null	= null ;
@@ -374,47 +414,7 @@ export class DerivedCollectionController {
 			type resDataPoint = {name:string, deps: Record<string,GrobNodeType>  }
 			type result = { data : resDataPoint[] }
 			let res : result = { data : [] };
-			function recursiveNameFinder( self, nameCalc : string, index : number = 0 ,arr : originRowData[] , res : result , deps : Record<string,GrobNodeType> ){
-				 
-				// ge values, and copy nameCalc by value (not reference). 
-				let currentName = nameCalc;
-				let nodes:GrobNodeType[];
-				let curr = arr[index];
-
-				// if we are done, return result
-				if (!curr){ 
-					if ( res.data.findIndex( p => p.name == currentName ) != -1 ){ 
-						throw new Error('Double Name, in names generated Detected');
-					}
-					res.data.push( {name:currentName, deps:deps } );
-					return;
-				}
-
-				// if this is a Select All Segment then get
-				if (curr.segments[2] == selAllInCollectionString){
-					const sys = (self.system as TTRPGSystem);  
-					let collection = sys.getCollection((curr.segments[0] as any),(curr.segments[1] as any));
-					let n : GrobNodeType[] = collection?.getNodes() ?? [];
-					nodes = n;
-				}
-
-				// else just add this name to the arr
-				else {
-					const sys = (self.system as TTRPGSystem);  
-					let collection = sys.getCollection((curr.segments[0] as any),(curr.segments[1] as any));
-					let n : GrobNodeType | undefined = collection?.getNode(curr.segments[2]);
-					nodes = n ? [ n ] : [];
-				}
-				
-				/// replace instring Part. 
-				nodes.forEach( node  => {
-					let currNameCalc = currentName.replace( curr.key , node.getName() ); 
-					let _deps = Object.assign({}, deps );
-					_deps[ curr.key ] = node;
-					recursiveNameFinder(self,currNameCalc, index + 1 ,arr,res, _deps)
-				});
-				
-			}
+		
 
 			recursiveNameFinder( this , nameCalc ,0, origins, res , {} );  
 			this.generativeNameListData.set( res.data.map( p => p.name ) );	
