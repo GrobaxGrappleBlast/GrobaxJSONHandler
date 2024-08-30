@@ -192,7 +192,6 @@ function JsonMappingRecordInArrayOut(option) {
             if (typeof v == 'function') {
                 try {
                     v = o[option.KeyPropertyName]();
-                    console.log(option.KeyPropertyName);
                     if (v === null || v === undefined) {
                         throw new Error("after calling function ".concat(option.KeyPropertyName, " key value was '").concat(v, "' "));
                     }
@@ -200,7 +199,6 @@ function JsonMappingRecordInArrayOut(option) {
                 catch (e) {
                     var messageAddon = v.length > 0 ? ', Note that message must have 0 Arguments, that arent either optional or have default values' : '';
                     var message = "Something went wrong with callign method '".concat(option.KeyPropertyName, "'").concat(messageAddon);
-                    console.error(e);
                     throw new Error(message);
                 }
             }

@@ -19,17 +19,13 @@
         "importsNotUsedAsValues":"remove", 
 		"skipLibCheck":true,
         "types": ["jest","node"], 
-		"emitDeclarationOnly":true,
-		"allowImportingTsExtensions":true,
+		"emitDeclarationOnly":false,
         "lib": [
             "dom",
             "ES5",
             "ES6",
             "ES7"
-        ],
-		"paths": {
-			"ttrpg-system-graph": ["node_modules/ttrpg-system-graph"]
-		},
+        ] 
     },
     "include": [
         "**/globals.d.ts"   ,

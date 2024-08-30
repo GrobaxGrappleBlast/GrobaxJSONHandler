@@ -3,16 +3,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.JSONHandler = void 0;
 var JsonModuleBaseFunction_1 = require("./JsonModuleBaseFunction");
 var JsonModuleConstants_1 = require("./JsonModuleConstants");
+var counter_jsonhandler = 0;
 var JSONHandler = /** @class */ (function () {
     function JSONHandler() {
     }
     JSONHandler.serialize = function (obj, scheme) {
         if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
-        return JSON.stringify(JSONHandler.serializeRaw(obj, scheme));
+        var o = JSONHandler.serializeRaw(obj, scheme);
+        return JSON.stringify(o);
     };
     JSONHandler.serializeRaw = function (obj, scheme, parentName) {
         if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
         if (parentName === void 0) { parentName = 'FIRST'; }
+        var prototypeDebug = Reflect.getPrototypeOf(obj);
         if (!obj) {
             return obj;
         }
@@ -76,11 +79,15 @@ var JSONHandler = /** @class */ (function () {
                     return r;
                 };
             }
+            if (counter_jsonhandler > 100000000000) {
+                console.log(prototypeDebug);
+            }
             // if there is a mapping function
             var out = null;
             if (meta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT)) {
-                var outFunction = (0, JsonModuleBaseFunction_1.getMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT, obj, key, scheme);
-                out = outFunction(obj[key], function (o) { return JSONHandler.serializeRaw(o, scheme); });
+                var outFunction_1 = (0, JsonModuleBaseFunction_1.getMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT, obj, key, scheme);
+                var _outF = function (o1) { return outFunction_1(o1, function (o2) { return typedconversion(o2, function (o3) { return JSONHandler.serializeRaw(o3, scheme, parentName + ':' + key); }); }); };
+                out = _outF(obj[key]);
             }
             else if (meta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FORCE_ARRAY)) {
                 out = [];
@@ -123,6 +130,9 @@ var JSONHandler = /** @class */ (function () {
         };
         for (var i = 0; i < propertyNames.length; i++) {
             _loop_1(i);
+        }
+        if (counter_jsonhandler++ > 100000000000) {
+            console.log(prototypeDebug);
         }
         return result;
     };
