@@ -1,10 +1,25 @@
-import { BASE_SCHEME, JSON_BASETYPES, JSON_TAGS } from "./JsonModuleConstants";
-import { setMetadata, setOwnMetaData } from "./JsonModuleBaseFunction";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.JsonProperty = JsonProperty;
+exports.JsonArrayProperty = JsonArrayProperty;
+exports.JsonNumber = JsonNumber;
+exports.JsonString = JsonString;
+exports.JsonBoolean = JsonBoolean;
+exports.JsonClassTyped = JsonClassTyped;
+exports.JsonArrayNumber = JsonArrayNumber;
+exports.JsonArrayString = JsonArrayString;
+exports.JsonArrayBoolean = JsonArrayBoolean;
+exports.JsonArrayClassTyped = JsonArrayClassTyped;
+exports.JsonMapping = JsonMapping;
+exports.JsonMappingRecordInArrayOut = JsonMappingRecordInArrayOut;
+exports.JsonObject = JsonObject;
+const JsonModuleConstants_1 = require("./JsonModuleConstants");
+const JsonModuleBaseFunction_1 = require("./JsonModuleBaseFunction");
 function cleanNonAccesibleSettings(option) {
     if (!option)
         return {};
     if (!option.scheme || option.scheme.length == 0)
-        option.scheme = [BASE_SCHEME];
+        option.scheme = [JsonModuleConstants_1.BASE_SCHEME];
     option.mappingFunctions = null;
     option.type = null;
     option.isArray = null;
@@ -15,15 +30,15 @@ function cleanNonAccesibleSettings(option) {
  * This is the base property, this is the property that other properties use.
  * it is recommended that you use the more specifik properties when possible
 */
-export function JsonProperty(option) {
+function JsonProperty(option) {
     return function (target, propertyKey) {
         let schemes;
         if (!(option === null || option === void 0 ? void 0 : option.scheme)) {
-            schemes = [BASE_SCHEME];
+            schemes = [JsonModuleConstants_1.BASE_SCHEME];
         }
         else if (Array.isArray(option.scheme)) {
             if (option.scheme.length == 0) {
-                schemes = [BASE_SCHEME];
+                schemes = [JsonModuleConstants_1.BASE_SCHEME];
             }
             else {
                 schemes = option.scheme;
@@ -34,31 +49,31 @@ export function JsonProperty(option) {
         }
         for (let i = 0; i < schemes.length; i++) {
             const scheme = schemes[i];
-            setMetadata(JSON_TAGS.JSON_PROPERTY, true, target, propertyKey, scheme);
+            (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY, true, target, propertyKey, scheme);
             if (!option) {
                 return;
             }
             if (option.forceBaseType) {
                 switch (option.forceBaseType) {
-                    case JSON_BASETYPES.string:
-                    case JSON_BASETYPES.number:
-                    case JSON_BASETYPES.bool:
-                        setMetadata(JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE, option.forceBaseType, target, propertyKey, scheme);
+                    case JsonModuleConstants_1.JSON_BASETYPES.string:
+                    case JsonModuleConstants_1.JSON_BASETYPES.number:
+                    case JsonModuleConstants_1.JSON_BASETYPES.bool:
+                        (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FORCE_BASE_TYPE, option.forceBaseType, target, propertyKey, scheme);
                 }
             }
             if (option.isArray) {
-                setMetadata(JSON_TAGS.JSON_PROPERTY_FORCE_ARRAY, true, target, propertyKey, scheme);
+                (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FORCE_ARRAY, true, target, propertyKey, scheme);
             }
             if (option.name) {
-                setMetadata(JSON_TAGS.JSON_PROPERTY_NAME_MAP_IN, propertyKey, target, option.name, scheme);
-                setMetadata(JSON_TAGS.JSON_PROPERTY_NAME_MAP_OUT, option.name, target, propertyKey, scheme);
+                (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_NAME_MAP_IN, propertyKey, target, option.name, scheme);
+                (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_NAME_MAP_OUT, option.name, target, propertyKey, scheme);
             }
             if (option.mappingFunctions) {
-                setMetadata(JSON_TAGS.JSON_PROPERTY_FUNC_MAP_IN, option.mappingFunctions.in, target, propertyKey, scheme);
-                setMetadata(JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT, option.mappingFunctions.out, target, propertyKey, scheme);
+                (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FUNC_MAP_IN, option.mappingFunctions.in, target, propertyKey, scheme);
+                (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT, option.mappingFunctions.out, target, propertyKey, scheme);
             }
             if (option.type) {
-                setMetadata(JSON_TAGS.JSON_PROPERTY_TYPED, option.type, target, propertyKey, scheme);
+                (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_TYPED, option.type, target, propertyKey, scheme);
             }
         }
     };
@@ -66,7 +81,7 @@ export function JsonProperty(option) {
 /**
  * This is the base property, that ensure what ever is deserialized|serialized is an array
 */
-export function JsonArrayProperty(option) {
+function JsonArrayProperty(option) {
     option = cleanNonAccesibleSettings(option);
     option.isArray = true;
     return JsonProperty(option);
@@ -74,25 +89,25 @@ export function JsonArrayProperty(option) {
 /**
  * This is a property that converts to a number
  */
-export function JsonNumber(option) {
+function JsonNumber(option) {
     option = cleanNonAccesibleSettings(option);
-    option.forceBaseType = JSON_BASETYPES.number;
+    option.forceBaseType = JsonModuleConstants_1.JSON_BASETYPES.number;
     return JsonProperty(option);
 }
 /**
  * This is a property that converts to a string
  */
-export function JsonString(option) {
+function JsonString(option) {
     option = cleanNonAccesibleSettings(option);
-    option.forceBaseType = JSON_BASETYPES.string;
+    option.forceBaseType = JsonModuleConstants_1.JSON_BASETYPES.string;
     return JsonProperty(option);
 }
 /**
  * This is a property that converts to a boolean
  */
-export function JsonBoolean(option) {
+function JsonBoolean(option) {
     option = cleanNonAccesibleSettings(option);
-    option.forceBaseType = JSON_BASETYPES.bool;
+    option.forceBaseType = JsonModuleConstants_1.JSON_BASETYPES.bool;
     return JsonProperty(option);
 }
 /**
@@ -100,7 +115,7 @@ export function JsonBoolean(option) {
  * when deserilizing it will be created through the constructor.
  * when serializign it will force it through the prototype.
  */
-export function JsonClassTyped(type, option) {
+function JsonClassTyped(type, option) {
     option = cleanNonAccesibleSettings(option);
     option.type = type;
     return JsonProperty(option);
@@ -108,27 +123,27 @@ export function JsonClassTyped(type, option) {
 /**
  * This is a property that converts to a number array
  */
-export function JsonArrayNumber(option) {
+function JsonArrayNumber(option) {
     option = cleanNonAccesibleSettings(option);
-    option.forceBaseType = JSON_BASETYPES.number;
+    option.forceBaseType = JsonModuleConstants_1.JSON_BASETYPES.number;
     option.isArray = true;
     return JsonProperty(option);
 }
 /**
  * This is a property that converts to a string array
  */
-export function JsonArrayString(option) {
+function JsonArrayString(option) {
     option = cleanNonAccesibleSettings(option);
-    option.forceBaseType = JSON_BASETYPES.string;
+    option.forceBaseType = JsonModuleConstants_1.JSON_BASETYPES.string;
     option.isArray = true;
     return JsonProperty(option);
 }
 /**
  * This is a property that converts to a boolean array
  */
-export function JsonArrayBoolean(option) {
+function JsonArrayBoolean(option) {
     option = cleanNonAccesibleSettings(option);
-    option.forceBaseType = JSON_BASETYPES.bool;
+    option.forceBaseType = JsonModuleConstants_1.JSON_BASETYPES.bool;
     option.isArray = true;
     return JsonProperty(option);
 }
@@ -137,7 +152,7 @@ export function JsonArrayBoolean(option) {
  * when deserilizing it will be created through the constructor.
  * when serializign it will force it through the prototype.
  */
-export function JsonArrayClassTyped(type, option) {
+function JsonArrayClassTyped(type, option) {
     option = cleanNonAccesibleSettings(option);
     option.isArray = true;
     option.type = type;
@@ -146,7 +161,7 @@ export function JsonArrayClassTyped(type, option) {
 /**
  * This is a property that helps ease mapping something in and out
  */
-export function JsonMapping(params) {
+function JsonMapping(params) {
     var _a;
     // clean the input.
     let option = cleanNonAccesibleSettings((_a = params.option) !== null && _a !== void 0 ? _a : {});
@@ -163,7 +178,7 @@ export function JsonMapping(params) {
 /**
  * This is a property to ease the action of having a record in the system but an array in the json
  */
-export function JsonMappingRecordInArrayOut(option) {
+function JsonMappingRecordInArrayOut(option) {
     // clean the input.
     let type = option.type;
     option = cleanNonAccesibleSettings(option !== null && option !== void 0 ? option : {});
@@ -210,21 +225,21 @@ function cleanObjectOptions(option) {
         option.onAfterDeSerialization = (o) => { };
     }
     if (!option.scheme || option.scheme.length == 0)
-        option.scheme = [BASE_SCHEME];
+        option.scheme = [JsonModuleConstants_1.BASE_SCHEME];
     return option;
 }
-export function JsonObject(option) {
+function JsonObject(option) {
     option = cleanObjectOptions(option);
     return function (target) {
         let schemes = option === null || option === void 0 ? void 0 : option.scheme;
         if (!schemes || schemes.length == 0)
-            schemes = [BASE_SCHEME];
+            schemes = [JsonModuleConstants_1.BASE_SCHEME];
         for (let i = 0; i < schemes.length; i++) {
             const scheme = schemes[i];
             if (option.onAfterDeSerialization)
-                setOwnMetaData(JSON_TAGS.JSON_OBJECT_ON_AFTER_DE_SERIALIZATION, target, option.onAfterDeSerialization, scheme);
+                (0, JsonModuleBaseFunction_1.setOwnMetaData)(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_AFTER_DE_SERIALIZATION, target, option.onAfterDeSerialization, scheme);
             if (option.onBeforeSerialization)
-                setOwnMetaData(JSON_TAGS.JSON_OBJECT_ON_BEFORE_SERIALIZATION, target, option.onBeforeSerialization, scheme);
+                (0, JsonModuleBaseFunction_1.setOwnMetaData)(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_BEFORE_SERIALIZATION, target, option.onBeforeSerialization, scheme);
         }
     };
 }

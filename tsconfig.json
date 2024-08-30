@@ -11,7 +11,7 @@
         "baseUrl": "./",   
         "sourceMap":true,
         "inlineSources": true,
-        "module": "ESNext",
+        "module": "commonjs",
         "target": "ES6",
         "verbatimModuleSyntax":false,
         "allowJs": true,

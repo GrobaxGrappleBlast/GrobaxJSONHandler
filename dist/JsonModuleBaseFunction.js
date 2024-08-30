@@ -1,8 +1,20 @@
-import { BASE_SCHEME } from "./JsonModuleConstants";
-import { Reflect } from "./Reflect";
-export function hasMetaDataInScheme(metaTag, target, propertyKey, scheme) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.hasMetaDataInScheme = hasMetaDataInScheme;
+exports.getMetadata = getMetadata;
+exports.getOwnMetaData = getOwnMetaData;
+exports.setMetadata = setMetadata;
+exports.setOwnMetaData = setOwnMetaData;
+exports.getOwnMetaDataKeys = getOwnMetaDataKeys;
+exports.getMetaDataKeys = getMetaDataKeys;
+exports.hasMetaData = hasMetaData;
+exports.getPrototype = getPrototype;
+exports.setPrototype = setPrototype;
+const JsonModuleConstants_1 = require("./JsonModuleConstants");
+const Reflect_1 = require("./Reflect");
+function hasMetaDataInScheme(metaTag, target, propertyKey, scheme) {
     try {
-        let data = Reflect.getMetadata(metaTag, target, propertyKey);
+        let data = Reflect_1.Reflect.getMetadata(metaTag, target, propertyKey);
         if (data[scheme] != undefined)
             return true;
         return false;
@@ -12,39 +24,39 @@ export function hasMetaDataInScheme(metaTag, target, propertyKey, scheme) {
     }
 }
 // GET --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
-export function getMetadata(metaTag, target, propertyKey, scheme = BASE_SCHEME) {
-    return Reflect.getMetadata(metaTag, target, propertyKey, scheme);
+function getMetadata(metaTag, target, propertyKey, scheme = JsonModuleConstants_1.BASE_SCHEME) {
+    return Reflect_1.Reflect.getMetadata(metaTag, target, propertyKey, scheme);
 }
-export function getOwnMetaData(metaTag, target, scheme = BASE_SCHEME) {
-    return Reflect.getOwnMetaData(metaTag, target, scheme);
+function getOwnMetaData(metaTag, target, scheme = JsonModuleConstants_1.BASE_SCHEME) {
+    return Reflect_1.Reflect.getOwnMetaData(metaTag, target, scheme);
 }
 // DEFINE --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
-export function setMetadata(metaTag, value, target, propertyKey, scheme = BASE_SCHEME) {
-    Reflect.defineMetaData(metaTag, value, target, propertyKey, scheme);
+function setMetadata(metaTag, value, target, propertyKey, scheme = JsonModuleConstants_1.BASE_SCHEME) {
+    Reflect_1.Reflect.defineMetaData(metaTag, value, target, propertyKey, scheme);
 }
-export function setOwnMetaData(metaTag, target, value, scheme = BASE_SCHEME) {
-    Reflect.defineOwnMetaData(metaTag, value, target, scheme);
+function setOwnMetaData(metaTag, target, value, scheme = JsonModuleConstants_1.BASE_SCHEME) {
+    Reflect_1.Reflect.defineOwnMetaData(metaTag, value, target, scheme);
 }
 // KEYS --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
-export function getOwnMetaDataKeys(target, scheme = BASE_SCHEME) {
-    let keys = Reflect.getOwnMetaDataKeys(target, scheme);
+function getOwnMetaDataKeys(target, scheme = JsonModuleConstants_1.BASE_SCHEME) {
+    let keys = Reflect_1.Reflect.getOwnMetaDataKeys(target, scheme);
     return keys;
 }
-export function getMetaDataKeys(target, key, scheme = BASE_SCHEME) {
-    let keys = Reflect.getMetadataKeys(target, key, scheme);
+function getMetaDataKeys(target, key, scheme = JsonModuleConstants_1.BASE_SCHEME) {
+    let keys = Reflect_1.Reflect.getMetadataKeys(target, key, scheme);
     return keys;
 }
-export function hasMetaData(target, scheme) {
-    let a = Reflect.getAllMeta(target, scheme);
+function hasMetaData(target, scheme) {
+    let a = Reflect_1.Reflect.getAllMeta(target, scheme);
     if (!a)
         return false;
     return true;
 }
-export function getPrototype(obj) {
-    return Reflect.getPrototype(obj);
+function getPrototype(obj) {
+    return Reflect_1.Reflect.getPrototype(obj);
 }
-export function setPrototype(obj, prototype) {
-    Reflect.setPrototype(obj, prototype);
-    return Reflect.getPrototype(obj) == prototype;
+function setPrototype(obj, prototype) {
+    Reflect_1.Reflect.setPrototype(obj, prototype);
+    return Reflect_1.Reflect.getPrototype(obj) == prototype;
 }
 //# sourceMappingURL=JsonModuleBaseFunction.js.map
