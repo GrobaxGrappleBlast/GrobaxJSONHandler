@@ -21,7 +21,7 @@ test('Test Collection Designer Derived Elements', () => {
 	// create the start requirements
 	let system : TTRPGSystemJSONFormatting = JSONHandler.deserialize( TTRPGSystemJSONFormatting , loadedSystemJSON );
 	let origins = JSON.parse('[{"key":"@a","segments":["fixed","stats","- - Select all - -"],"active":true,"testValue":1,"inCalc":true,"target":null,"isSelectAllTarget":true}]')
-	system.createFixedCollection('stats');
+	//system.createFixedCollection('stats');
 	system.createFixedNode('stats','strength');
 	system.createFixedNode('stats','dexterity');
 	system.createFixedNode('stats','constitution');
@@ -45,7 +45,6 @@ test('Test Collection Designer Derived Elements', () => {
 	// SERIALIZE 
 	let json = JSONHandler.serialize(system);
 	let system2 = JSONHandler.deserialize( TTRPGSystemJSONFormatting , json );
-	console.log(json,system2);
 
 	let _1 = Object.keys(system.data);
 	let _2 = Object.keys(system2.data);

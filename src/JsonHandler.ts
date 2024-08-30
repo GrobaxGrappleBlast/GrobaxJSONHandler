@@ -104,12 +104,16 @@ export class JSONHandler{
 			let out : any = null;
 			if ( meta.includes(JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT )){
 				let outFunction = getMetadata( JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT , obj , key  , scheme  ); 
-				
-				let a = (o , ser) => outFunction(o , ser );
-				let b = typedconversion;
-				
-				
-				out = outFunction(obj[key], (o)=>JSONHandler.serializeRaw( o, scheme  , parentName + ':' + key ) );
+		
+				let _outF = 
+				(o1) => outFunction(
+					o1,
+					(o2) => typedconversion( 
+						o2,
+						(o3)=>JSONHandler.serializeRaw(o3, scheme, parentName + ':' + key )
+					)
+				);
+				out = _outF(obj[key]);
 			} 
 			else if( meta.includes(JSON_TAGS.JSON_PROPERTY_FORCE_ARRAY ) ){
 				out = [];

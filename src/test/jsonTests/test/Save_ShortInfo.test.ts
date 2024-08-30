@@ -154,7 +154,7 @@ test('Test that we can serialize every part of such a system ', () => {
  
 });
 
-test('Test that we get when deserializing', () => {
+test('Test what we get when deserializing', () => {
 
 	let sys = setUpTests();
 

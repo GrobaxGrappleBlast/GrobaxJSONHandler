@@ -22,6 +22,7 @@
 		"emitDeclarationOnly":true,
 		"allowImportingTsExtensions":true,
         "lib": [
+            "dom",
             "ES5",
             "ES6",
             "ES7"

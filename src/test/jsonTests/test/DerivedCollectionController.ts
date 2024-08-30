@@ -83,8 +83,7 @@ export class DerivedCollectionController {
 	private validateName( name , messageHandler: StaticMessageHandler | null = null , output:boolean ){
 		let out = (key,msg,error) => { if(output){ messageHandler?.addMessageManual(key,msg,error) }}
 
-		let isValid = true ; 
-		console.log(name);
+		let isValid = true ;  
 
 		// check the name
 		if (name== ''){
