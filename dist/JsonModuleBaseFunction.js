@@ -10,11 +10,11 @@ exports.getMetaDataKeys = getMetaDataKeys;
 exports.hasMetaData = hasMetaData;
 exports.getPrototype = getPrototype;
 exports.setPrototype = setPrototype;
-const JsonModuleConstants_1 = require("./JsonModuleConstants");
-const Reflect_1 = require("./Reflect");
+var JsonModuleConstants_1 = require("./JsonModuleConstants");
+var Reflect_1 = require("./Reflect");
 function hasMetaDataInScheme(metaTag, target, propertyKey, scheme) {
     try {
-        let data = Reflect_1.Reflect.getMetadata(metaTag, target, propertyKey);
+        var data = Reflect_1.Reflect.getMetadata(metaTag, target, propertyKey);
         if (data[scheme] != undefined)
             return true;
         return false;
@@ -24,30 +24,36 @@ function hasMetaDataInScheme(metaTag, target, propertyKey, scheme) {
     }
 }
 // GET --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
-function getMetadata(metaTag, target, propertyKey, scheme = JsonModuleConstants_1.BASE_SCHEME) {
+function getMetadata(metaTag, target, propertyKey, scheme) {
+    if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
     return Reflect_1.Reflect.getMetadata(metaTag, target, propertyKey, scheme);
 }
-function getOwnMetaData(metaTag, target, scheme = JsonModuleConstants_1.BASE_SCHEME) {
+function getOwnMetaData(metaTag, target, scheme) {
+    if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
     return Reflect_1.Reflect.getOwnMetaData(metaTag, target, scheme);
 }
 // DEFINE --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
-function setMetadata(metaTag, value, target, propertyKey, scheme = JsonModuleConstants_1.BASE_SCHEME) {
+function setMetadata(metaTag, value, target, propertyKey, scheme) {
+    if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
     Reflect_1.Reflect.defineMetaData(metaTag, value, target, propertyKey, scheme);
 }
-function setOwnMetaData(metaTag, target, value, scheme = JsonModuleConstants_1.BASE_SCHEME) {
+function setOwnMetaData(metaTag, target, value, scheme) {
+    if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
     Reflect_1.Reflect.defineOwnMetaData(metaTag, value, target, scheme);
 }
 // KEYS --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
-function getOwnMetaDataKeys(target, scheme = JsonModuleConstants_1.BASE_SCHEME) {
-    let keys = Reflect_1.Reflect.getOwnMetaDataKeys(target, scheme);
+function getOwnMetaDataKeys(target, scheme) {
+    if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
+    var keys = Reflect_1.Reflect.getOwnMetaDataKeys(target, scheme);
     return keys;
 }
-function getMetaDataKeys(target, key, scheme = JsonModuleConstants_1.BASE_SCHEME) {
-    let keys = Reflect_1.Reflect.getMetadataKeys(target, key, scheme);
+function getMetaDataKeys(target, key, scheme) {
+    if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
+    var keys = Reflect_1.Reflect.getMetadataKeys(target, key, scheme);
     return keys;
 }
 function hasMetaData(target, scheme) {
-    let a = Reflect_1.Reflect.getAllMeta(target, scheme);
+    var a = Reflect_1.Reflect.getAllMeta(target, scheme);
     if (!a)
         return false;
     return true;
@@ -59,4 +65,3 @@ function setPrototype(obj, prototype) {
     Reflect_1.Reflect.setPrototype(obj, prototype);
     return Reflect_1.Reflect.getPrototype(obj) == prototype;
 }
-//# sourceMappingURL=JsonModuleBaseFunction.js.map

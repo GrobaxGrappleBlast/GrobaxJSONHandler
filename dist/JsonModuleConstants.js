@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.JSON_BASETYPES = exports.JSON_TAGS = exports.NoOutput = exports.BASE_SCHEME = void 0;
 exports.BASE_SCHEME = '_base';
 exports.NoOutput = {
-    outError(msg) { },
-    outLog(msg) { }
+    outError: function (msg) { },
+    outLog: function (msg) { }
 };
 var JSON_TAGS;
 (function (JSON_TAGS) {
@@ -25,4 +25,3 @@ var JSON_BASETYPES;
     JSON_BASETYPES["bool"] = "bool";
     JSON_BASETYPES["number"] = "number";
 })(JSON_BASETYPES || (exports.JSON_BASETYPES = JSON_BASETYPES = {}));
-//# sourceMappingURL=JsonModuleConstants.js.map

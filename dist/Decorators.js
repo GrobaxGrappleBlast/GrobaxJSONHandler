@@ -13,8 +13,8 @@ exports.JsonArrayClassTyped = JsonArrayClassTyped;
 exports.JsonMapping = JsonMapping;
 exports.JsonMappingRecordInArrayOut = JsonMappingRecordInArrayOut;
 exports.JsonObject = JsonObject;
-const JsonModuleConstants_1 = require("./JsonModuleConstants");
-const JsonModuleBaseFunction_1 = require("./JsonModuleBaseFunction");
+var JsonModuleConstants_1 = require("./JsonModuleConstants");
+var JsonModuleBaseFunction_1 = require("./JsonModuleBaseFunction");
 function cleanNonAccesibleSettings(option) {
     if (!option)
         return {};
@@ -32,7 +32,7 @@ function cleanNonAccesibleSettings(option) {
 */
 function JsonProperty(option) {
     return function (target, propertyKey) {
-        let schemes;
+        var schemes;
         if (!(option === null || option === void 0 ? void 0 : option.scheme)) {
             schemes = [JsonModuleConstants_1.BASE_SCHEME];
         }
@@ -47,8 +47,8 @@ function JsonProperty(option) {
         else {
             schemes = [option.scheme];
         }
-        for (let i = 0; i < schemes.length; i++) {
-            const scheme = schemes[i];
+        for (var i = 0; i < schemes.length; i++) {
+            var scheme = schemes[i];
             (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY, true, target, propertyKey, scheme);
             if (!option) {
                 return;
@@ -164,7 +164,7 @@ function JsonArrayClassTyped(type, option) {
 function JsonMapping(params) {
     var _a;
     // clean the input.
-    let option = cleanNonAccesibleSettings((_a = params.option) !== null && _a !== void 0 ? _a : {});
+    var option = cleanNonAccesibleSettings((_a = params.option) !== null && _a !== void 0 ? _a : {});
     // set the type
     if (params.type)
         option.type = params.type;
@@ -180,26 +180,26 @@ function JsonMapping(params) {
  */
 function JsonMappingRecordInArrayOut(option) {
     // clean the input.
-    let type = option.type;
+    var type = option.type;
     option = cleanNonAccesibleSettings(option !== null && option !== void 0 ? option : {});
-    let outfunc = (col, s) => { return Object.values(col).map(p => s(p)); };
-    let infunc = (col, d) => {
-        let r = {};
+    var outfunc = function (col, s) { return Object.values(col).map(function (p) { return s(p); }); };
+    var infunc = function (col, d) {
+        var r = {};
         // @ts-ignore
-        col.map(p => {
-            let o = d(p);
-            let v = o[option.KeyPropertyName];
+        col.map(function (p) {
+            var o = d(p);
+            var v = o[option.KeyPropertyName];
             if (typeof v == 'function') {
                 try {
                     v = o[option.KeyPropertyName]();
                     console.log(option.KeyPropertyName);
                     if (v === null || v === undefined) {
-                        throw new Error(`after calling function ${option.KeyPropertyName} key value was '${v}' `);
+                        throw new Error("after calling function ".concat(option.KeyPropertyName, " key value was '").concat(v, "' "));
                     }
                 }
                 catch (e) {
-                    let messageAddon = v.length > 0 ? ', Note that message must have 0 Arguments, that arent either optional or have default values' : '';
-                    let message = `Something went wrong with callign method '${option.KeyPropertyName}'${messageAddon}`;
+                    var messageAddon = v.length > 0 ? ', Note that message must have 0 Arguments, that arent either optional or have default values' : '';
+                    var message = "Something went wrong with callign method '".concat(option.KeyPropertyName, "'").concat(messageAddon);
                     console.error(e);
                     throw new Error(message);
                 }
@@ -222,7 +222,7 @@ function cleanObjectOptions(option) {
     if (!option)
         option = {};
     if (!option.onAfterDeSerialization) {
-        option.onAfterDeSerialization = (o) => { };
+        option.onAfterDeSerialization = function (o) { };
     }
     if (!option.scheme || option.scheme.length == 0)
         option.scheme = [JsonModuleConstants_1.BASE_SCHEME];
@@ -231,11 +231,11 @@ function cleanObjectOptions(option) {
 function JsonObject(option) {
     option = cleanObjectOptions(option);
     return function (target) {
-        let schemes = option === null || option === void 0 ? void 0 : option.scheme;
+        var schemes = option === null || option === void 0 ? void 0 : option.scheme;
         if (!schemes || schemes.length == 0)
             schemes = [JsonModuleConstants_1.BASE_SCHEME];
-        for (let i = 0; i < schemes.length; i++) {
-            const scheme = schemes[i];
+        for (var i = 0; i < schemes.length; i++) {
+            var scheme = schemes[i];
             if (option.onAfterDeSerialization)
                 (0, JsonModuleBaseFunction_1.setOwnMetaData)(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_AFTER_DE_SERIALIZATION, target, option.onAfterDeSerialization, scheme);
             if (option.onBeforeSerialization)
@@ -243,4 +243,3 @@ function JsonObject(option) {
         }
     };
 }
-//# sourceMappingURL=Decorators.js.map

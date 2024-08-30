@@ -2,17 +2,13 @@
     "compilerOptions": {
 		"outDir": "./dist",  
 		"rootDir": "./src",
-		"declaration":true,
-		 
-
+		"declaration":true, 
         "esModuleInterop":true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
-        "baseUrl": "./",   
-        "sourceMap":true,
-        "inlineSources": true,
+        "baseUrl": "./",    
         "module": "commonjs",
-        "target": "ES6",
+        "target": "ES5",
         "verbatimModuleSyntax":false,
         "allowJs": true,
         "noImplicitAny": false,
@@ -21,6 +17,7 @@
         "isolatedModules": true,
         "strictNullChecks": true,
         "importsNotUsedAsValues":"remove", 
+		"skipLibCheck":true,
         "types": ["jest","node"],
         "lib": [
             "ES5",
