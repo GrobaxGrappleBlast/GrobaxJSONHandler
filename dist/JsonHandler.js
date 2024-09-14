@@ -225,7 +225,7 @@ var JSONHandler = /** @class */ (function () {
             // get meta data function and run it on the resulting object
             var f = (0, JsonModuleBaseFunction_1.getOwnMetaData)(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_BEFORE_DE_SERIALIZATION, result, scheme);
             if (f)
-                result = f(result);
+                result = f(result, obj);
             // incase the Before has changed the type 
             if (!JSONHandler.areSamePrototypes(result, target)) {
                 target = (0, JsonModuleBaseFunction_1.getPrototype)(result).constructor;

@@ -33,7 +33,7 @@ export interface propertiesSpecialRecordArrayMapping<IN extends object, OUT exte
 export interface propertiesJsonObject {
     scheme?: string[] | string;
     onBeforeSerialization?: (self: any) => any;
-    onBeforeDeSerialization?: (self: any) => object;
+    onBeforeDeSerialization?: (resultingObj: any, jsonObject: any) => object;
     onAfterDeSerialization?: (self: any) => any;
     onAfterSerialization?: (self: any) => any;
     onAfterSerialization_beforeString?: (self: any) => any;
