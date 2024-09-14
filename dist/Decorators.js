@@ -234,10 +234,18 @@ function JsonObject(option) {
             schemes = [JsonModuleConstants_1.BASE_SCHEME];
         for (var i = 0; i < schemes.length; i++) {
             var scheme = schemes[i];
+            // SERIALIZATION 
             if (option.onAfterDeSerialization)
                 (0, JsonModuleBaseFunction_1.setOwnMetaData)(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_AFTER_DE_SERIALIZATION, target, option.onAfterDeSerialization, scheme);
+            if (option.onAfterSerialization_beforeString)
+                (0, JsonModuleBaseFunction_1.setOwnMetaData)(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_AFTER_SERIALIZATION_BEFORE_STRING, target, option.onAfterSerialization_beforeString, scheme);
+            if (option.onAfterSerialization)
+                (0, JsonModuleBaseFunction_1.setOwnMetaData)(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_AFTER_SERIALIZATION, target, option.onAfterSerialization, scheme);
+            // DE SERIALIZATION 
             if (option.onBeforeSerialization)
                 (0, JsonModuleBaseFunction_1.setOwnMetaData)(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_BEFORE_SERIALIZATION, target, option.onBeforeSerialization, scheme);
+            if (option.onBeforeDeSerialization)
+                (0, JsonModuleBaseFunction_1.setOwnMetaData)(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_BEFORE_DE_SERIALIZATION, target, option.onBeforeDeSerialization, scheme);
         }
     };
 }

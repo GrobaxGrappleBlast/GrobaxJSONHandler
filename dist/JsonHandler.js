@@ -3,19 +3,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.JSONHandler = void 0;
 var JsonModuleBaseFunction_1 = require("./JsonModuleBaseFunction");
 var JsonModuleConstants_1 = require("./JsonModuleConstants");
-var counter_jsonhandler = 0;
 var JSONHandler = /** @class */ (function () {
     function JSONHandler() {
     }
     JSONHandler.serialize = function (obj, scheme) {
         if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
         var o = JSONHandler.serializeRaw(obj, scheme);
-        return JSON.stringify(o);
+        var str = JSON.stringify(o);
+        // if there is an After serialize function get it and run it. 
+        var ObjectMeta = (0, JsonModuleBaseFunction_1.getOwnMetaDataKeys)(obj);
+        if (ObjectMeta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_AFTER_SERIALIZATION)) {
+            var f = (0, JsonModuleBaseFunction_1.getOwnMetaData)(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_AFTER_SERIALIZATION, obj, scheme);
+            if (f)
+                str = f(str);
+        }
+        return str;
     };
     JSONHandler.serializeRaw = function (obj, scheme, parentName) {
         if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
         if (parentName === void 0) { parentName = 'FIRST'; }
-        var prototypeDebug = Reflect.getPrototypeOf(obj);
         if (!obj) {
             return obj;
         }
@@ -23,6 +29,8 @@ var JSONHandler = /** @class */ (function () {
         var type = typeof obj;
         switch (type) {
             case 'string':
+                return JSONHandler.deserializeAndForceSimple('string', obj, scheme);
+                break;
             case 'boolean':
             case 'number':
                 return obj;
@@ -79,9 +87,6 @@ var JSONHandler = /** @class */ (function () {
                     return r;
                 };
             }
-            if (counter_jsonhandler > 100000000000) {
-                console.log(prototypeDebug);
-            }
             // if there is a mapping function
             var out = null;
             if (meta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_FUNC_MAP_OUT)) {
@@ -131,8 +136,11 @@ var JSONHandler = /** @class */ (function () {
         for (var i = 0; i < propertyNames.length; i++) {
             _loop_1(i);
         }
-        if (counter_jsonhandler++ > 100000000000) {
-            console.log(prototypeDebug);
+        // if there is an After serialize function get it and run it. 
+        if (ObjectMeta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_AFTER_SERIALIZATION_BEFORE_STRING)) {
+            var f = (0, JsonModuleBaseFunction_1.getOwnMetaData)(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_AFTER_SERIALIZATION_BEFORE_STRING, obj, scheme);
+            if (f)
+                f(result);
         }
         return result;
     };
@@ -164,14 +172,23 @@ var JSONHandler = /** @class */ (function () {
             case JsonModuleConstants_1.JSON_BASETYPES.string:
                 if (obj == null)
                     return "";
-                if (Array.isArray(obj)) {
-                    return JSON.stringify(obj);
+                if (typeof obj == 'string') {
+                    //const str = obj.replaceAll("<<dp>>",'\\"');
+                    return obj;
+                }
+                else if (Array.isArray(obj)) {
+                    var str = JSON.stringify(obj);
+                    //str = str.replaceAll("<<dp>>",'\\"');
+                    return str;
                 }
                 else if (typeof obj == 'object') {
                     if ((0, JsonModuleBaseFunction_1.hasMetaData)(obj, scheme)) {
                         return JSONHandler.serialize(obj, scheme);
                     }
                     else {
+                        //let str = JSON.stringify(obj);
+                        //str = str.replaceAll('\\"',"<<dp>>");
+                        //return str
                         return JSON.stringify(obj);
                     }
                 }
@@ -202,6 +219,18 @@ var JSONHandler = /** @class */ (function () {
         // serializedObject is a new object, without non Jsonproperties
         var result = new target();
         var prototype = target.prototype;
+        // EVENT ON AFTER DESERIALIZE
+        var ObjectMeta = (0, JsonModuleBaseFunction_1.getOwnMetaDataKeys)(target);
+        if (ObjectMeta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_BEFORE_DE_SERIALIZATION)) {
+            // get meta data function and run it on the resulting object
+            var f = (0, JsonModuleBaseFunction_1.getOwnMetaData)(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_BEFORE_DE_SERIALIZATION, result, scheme);
+            if (f)
+                result = f(result);
+            // incase the Before has changed the type 
+            if (!JSONHandler.areSamePrototypes(result, target)) {
+                target = (0, JsonModuleBaseFunction_1.getPrototype)(result).constructor;
+            }
+        }
         // get propertynames and loop through 
         var propertyNames = Object.getOwnPropertyNames(obj);
         var _loop_3 = function (i) {
@@ -284,7 +313,7 @@ var JSONHandler = /** @class */ (function () {
             _loop_3(i);
         }
         // EVENT ON AFTER DESERIALIZE
-        var ObjectMeta = (0, JsonModuleBaseFunction_1.getOwnMetaDataKeys)(result);
+        ObjectMeta = (0, JsonModuleBaseFunction_1.getOwnMetaDataKeys)(result);
         // if there is an After serialize function get it and run it. 
         if (ObjectMeta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_OBJECT_ON_AFTER_DE_SERIALIZATION)) {
             // get meta data function and run it on the resulting object
@@ -293,6 +322,15 @@ var JSONHandler = /** @class */ (function () {
                 f(result);
         }
         return result;
+    };
+    JSONHandler.changePrototype = function (target, source) {
+        var prototype = (0, JsonModuleBaseFunction_1.getPrototype)(source);
+        (0, JsonModuleBaseFunction_1.setPrototype)(target, prototype);
+    };
+    JSONHandler.areSamePrototypes = function (target, source) {
+        var prototype1 = (0, JsonModuleBaseFunction_1.getPrototype)(source);
+        var prototype2 = (0, JsonModuleBaseFunction_1.getPrototype)(target);
+        return prototype1 == prototype2;
     };
     return JSONHandler;
 }());

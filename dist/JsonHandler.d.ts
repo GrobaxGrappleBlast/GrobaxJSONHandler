@@ -6,4 +6,6 @@ export declare class JSONHandler {
     static deserialize<T extends object>(target: Constructor<T>, json: any, scheme?: string, writeOut?: IOutputHandler): any;
     private static deserializeAndForceSimple;
     private static deserializeRaw;
+    static changePrototype(target: any, source: any): void;
+    static areSamePrototypes(target: any, source: any): boolean;
 }
