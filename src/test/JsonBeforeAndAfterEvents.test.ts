@@ -4,7 +4,7 @@ import { Reflect } from '../Reflect'
 
 
 @JsonObject({
-	onAfterSerialization	: ( json : string )=>{ 
+	onAfterSerialization	: ( json : string|any )=>{ 
 		var res = json.replaceAll('@',"#");
 		res = res.replaceAll('1',"9");
 		return res;
@@ -45,7 +45,7 @@ test('Events at Serialization Tests', () => {
 	onAfterDeSerialization	: ( json : DeSerialTestObj )=>{ 
 		
 	},
-	onBeforeDeSerialization	: ( self : any )=>{
+	onBeforeDeSerialization	: ( self : any , jsonObj:any )=>{
 		return new DeSerialTestObj2();
 	}
 })

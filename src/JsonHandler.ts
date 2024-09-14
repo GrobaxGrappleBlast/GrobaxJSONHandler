@@ -269,7 +269,7 @@ export class JSONHandler{
 			// get meta data function and run it on the resulting object
 			let f = getOwnMetaData(JSON_TAGS.JSON_OBJECT_ON_BEFORE_DE_SERIALIZATION,result,scheme); 
 			if(f)
-				result = f(result);
+				result = f(result , obj);
 
 			// incase the Before has changed the type 
 			if(!JSONHandler.areSamePrototypes(result,target)){
