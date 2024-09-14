@@ -57,7 +57,6 @@ export class JSONHandler{
 		if(ObjectMeta.includes(JSON_TAGS.JSON_OBJECT_ON_BEFORE_SERIALIZATION)){
 			// get meta data function and run it on the resulting object
 			let f = getOwnMetaData(JSON_TAGS.JSON_OBJECT_ON_BEFORE_SERIALIZATION,obj,scheme);
-			
 			if(f)
 				f(obj);
 		}
@@ -87,7 +86,12 @@ export class JSONHandler{
 			// if the item is typed, then we excange the prototypes for each object as we deserialize. 
 			// we do this in a funciton to minimize if statement chaos;
 			let typedconversion = ( v :any , ser : (v) => any ) => v;
-			if (meta.includes(JSON_TAGS.JSON_PROPERTY_TYPED)){
+			
+			let skipForceType = false;
+			if( meta.includes(JSON_TAGS.JSON_PROPERTY_TYPED_SKIP_FORCED) ){
+				skipForceType = getMetadata( JSON_TAGS.JSON_PROPERTY_TYPED_SKIP_FORCED , obj , key  , scheme )
+			}
+			if ( meta.includes(JSON_TAGS.JSON_PROPERTY_TYPED) && !skipForceType ){
 				typedconversion = ( v :any , ser : (v) => any ) => { 
 					// get prototypes;
 					let during = (getMetadata(JSON_TAGS.JSON_PROPERTY_TYPED, obj , key , scheme)).prototype;
@@ -128,8 +132,7 @@ export class JSONHandler{
 							const e = typedconversion( 
 								obj[key][j] ,
 								(o) => JSONHandler.serializeRaw( o , scheme , parentName + ':['+j+']:' + key )
-							)
-							//const e = JSONHandler.serializeRaw( obj[key][j] , scheme );
+							) 
 							out.push(e)
 						}
 					}else{

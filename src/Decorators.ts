@@ -22,7 +22,7 @@ export interface propertyJSONInnerOptions<IN extends object,OUT extends object> 
 	mappingFunctions? :{ out:( t:IN , serialize?:any ) => OUT , in:( b:OUT, deserialize?:any ) => IN } , 
 	
 	/**if this should force the type (class) */
-	type?: any, 
+	type?: any,  
 	
 	/**if it should force the value to be a string|number|boolean */
 	forceBaseType?: false | keyof typeof JSON_BASETYPES 
@@ -41,6 +41,8 @@ export interface propertiesJsonMapping<IN extends object,OUT extends object>{
 
 	/**if this should force the type (class) */
 	type? : Constructor<IN>, 
+
+	
 	option? : propertyJSONInnerOptions<IN,OUT> 
 }
 export interface propertiesSpecialRecordArrayMapping<IN extends object,OUT extends object> extends propertyJSONInnerOptions<IN,OUT>{
@@ -75,6 +77,9 @@ export interface JSONPropertyOptions {
 
 	/**if this should be forced to an array */
 	isArray?:boolean 
+
+	/** skip any forcing of types when serializing */
+	skipForceType?:boolean,
 }
 
 
@@ -136,6 +141,10 @@ export function JsonProperty( option?:propertyJSONInnerOptions<any,any> ) {
 	
 			if(option.type){
 				setMetadata( JSON_TAGS.JSON_PROPERTY_TYPED		, option.type	, target, propertyKey , scheme);
+			}
+
+			if(option.skipForceType){
+				setMetadata( JSON_TAGS.JSON_PROPERTY_TYPED_SKIP_FORCED , true, target, propertyKey, scheme );
 			}
 		}
 		

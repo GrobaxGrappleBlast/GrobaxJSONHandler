@@ -1,4 +1,6 @@
-import { JSONHandler, JsonArrayBoolean, JsonBoolean, JsonClassTyped, JsonMapping, JsonMappingRecordInArrayOut, JsonNumber, JsonObject, JsonProperty, JsonString } from "../index";
+import { debug } from "console";
+import { JSONHandler, JsonArrayBoolean, JsonArrayClassTyped, JsonArrayNumber, JsonArrayString, JsonBoolean, JsonClassTyped, JsonMapping, JsonMappingRecordInArrayOut, JsonNumber, JsonObject, JsonProperty, JsonString } from "../index";
+import { setPrototype , getPrototype, getMetaDataKeys, getOwnMetaDataKeys} from "../JsonModuleBaseFunction";
 import { Reflect } from '../Reflect'
 
 
@@ -86,8 +88,196 @@ test('Events at DESerialization Tests', () => {
 
 
 
+@JsonObject({
+	onBeforeSerialization 	: (self) => {},
+	onBeforeDeSerialization : (self, JsonObject ) => { 
+
+		console.log(JsonObject['type']);
+		switch(JsonObject['type']){
+			case 'Feature_string' 				: return new Feature_string()
+			case 'Feature_arrayString' 			: return new Feature_arrayString()
+			case 'Feature_number' 				: return new Feature_number()
+			case 'Feature_arrayNumber' 			: return new Feature_arrayNumber()
+			case 'Feature_boolean' 				: return new Feature_boolean()
+			case 'Feature_arrayBoolean' 		: return new Feature_arrayBoolean()
+			case 'Feature_class' 				: return new Feature_class()
+			case 'Feature_arrayClass' 			: return new Feature_arrayClass()
+			case 'Feature' 						: return new Feature()
+			default:
+				return self;
+		}
+	}
+})
+ 
+export class Feature {
+
+	@JsonString()
+	public type : string = "Feature";
+	public init(){}
+	
+}
+
+export class Feature_string extends Feature {
+	public type : string = 'Feature_string';
+
+	@JsonString()
+	public str : string;
+
+	public init(){
+		this.str = 'textTextText';
+	}
+}
+
+export class Feature_arrayString extends Feature {
+	public type : string = 'Feature_arrayString';
+
+	@JsonArrayString()
+	public arr : string[] ;
+
+	public init(){
+		this.arr = ['string1','string2','string3'];
+	}
+}
+
+export class Feature_number extends Feature {
+	public type : string = 'Feature_number';
+
+	@JsonNumber()
+	public num : number ;
+
+	public init(){
+		this.num = 5;
+	}
+}
+
+export class Feature_arrayNumber extends Feature {
+	public type : string = 'Feature_arrayNumber';
+
+	@JsonArrayNumber()
+	public arr : number[] ;
+
+	public init(){
+		this.arr =  [1,2,3,4,5];
+	}
+}
+
+export class Feature_boolean extends Feature {
+	public type : string = 'Feature_boolean';
+
+	@JsonBoolean()
+	public bol : boolean ;
+
+	public init(){
+		this.bol = true;
+	}
+}
+
+export class Feature_arrayBoolean extends Feature {
+	public type : string = 'Feature_arrayBoolean';
+
+	@JsonArrayBoolean()
+	public arr : boolean[] ;
+
+	public init(){
+		this.arr = [false,false,true,false,true];
+	}
+}
+
+export class Box{
+	
+	@JsonString()
+	color:string = "brown";
+	
+	@JsonNumber()
+	width:number = 20;
+
+	@JsonNumber()
+	height:number = 20;
+}
+export class Feature_class extends Feature {
+	public type : string = 'Feature_class';
+
+	@JsonClassTyped(Box)
+	public box : Box ;
+
+	public init(){
+		this.box = new Box();
+	}
+}
+
+export class Feature_arrayClass extends Feature {
+	public type : string = 'Feature_arrayClass';
+
+	@JsonArrayClassTyped(Box)
+	public arr : Box[] ;
+
+	public init(){
+		this.arr =[new Box(), new Box()];
+	}
+} 
+class FeatureList {
+	
+	@JsonArrayClassTyped(Feature, { skipForceType: true })
+	public features : Feature[] = [
+		new Feature_string()	,
+		new Feature_arrayString()	,
+		new Feature_number()	,
+		new Feature_arrayNumber()	,
+		new Feature_boolean()	,
+		new Feature_arrayBoolean()	,
+		new Feature_class()	,
+		new Feature_arrayClass()	, 
+		new Feature()	,
+	]
+
+	public init(){
+		this.features.forEach( f  => {
+			f.init();
+		});
+	}
+}
+
+test('advanced DESerialization Tests', () => {
+
+	let c = new FeatureList();
+	c.init();
+	let json = JSONHandler.serialize(c);
+	let obj = JSONHandler.deserialize(FeatureList,json); 
+	let ref = JSON.parse(json);
 
 
+	let arr = [
+		'Feature_string',
+		'Feature_arrayString',
+		'Feature_number',
+		'Feature_arrayNumber',
+		'Feature_boolean',
+		'Feature_arrayBoolean',
+		'Feature_class',
+		'Feature_arrayClass',
+		'Feature'
+	];
+	
+	for (let i = 0; i < obj.features.length; i++) {
+		const type = arr[i];
+		const feature = obj.features[i];
+		console.log(type, feature.type);
+		expect( feature.type ).toBe(type);
+
+		switch(type){
+			case 'Feature_string' 				: expect( feature.str )		.toEqual('textTextText')					; break;
+			case 'Feature_arrayString' 			: expect( feature.arr )		.toEqual(['string1','string2','string3'])	; break;
+			case 'Feature_number' 				: expect( feature.num )		.toEqual(5)									; break;
+			case 'Feature_arrayNumber' 			: expect( feature.arr )		.toEqual([1,2,3,4,5])						; break;
+			case 'Feature_boolean' 				: expect( feature.bol )		.toEqual(true)								; break;
+			case 'Feature_arrayBoolean' 		: expect( feature.arr )		.toEqual([false,false,true,false,true])		; break;
+			case 'Feature_class' 				: expect( feature.box )		.toEqual(new Box())							; break;
+			case 'Feature_arrayClass' 			: expect( feature.arr )		.toEqual([new Box(), new Box()])			; break;
+		}
+	}
+
+
+})
 
 
 

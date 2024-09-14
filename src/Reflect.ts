@@ -35,20 +35,30 @@ export class Reflect {
 	}
 
 	private static getOrCreateAllMetaData(obj : Constructor<any> | object ,create = false){
-		let a = Reflect.getPrototype(obj); 
-		if ( a === Object.prototype) {
+		let prototype = Reflect.getPrototype(obj); 
+		if ( prototype === Object.prototype) {
 			return null;
 		}
 
-		if(a == null)
+		if(prototype == null)
 			return null;
-   
+		
+		let a = prototype;
 		if(!(a['gjmd'])){
 			if(!create)
 				return null;
 			a['gjmd'] = {};
 		}
-		return a['gjmd'];
+		a = a['gjmd'];
+
+		if (!a[prototype.constructor.name]){
+			if(!create)
+				return null;
+			a[prototype.constructor.name] = {}
+		}
+		a = a[prototype.constructor.name];
+
+		return a;
 	}
 	private static getOrCreateDefinedMetaData(obj : Constructor<any> | object , scheme , create = false ){
 		let a = Reflect.getOrCreateAllMetaData(obj,create);
