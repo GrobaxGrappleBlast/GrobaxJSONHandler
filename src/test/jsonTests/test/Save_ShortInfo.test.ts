@@ -1,10 +1,7 @@
 
-import { JSONHandler } from "../../../JsonHandler.ts";
-import { BASE_SCHEME } from "../../../JsonModuleConstants.ts";
-import {TTRPG_SCHEMES, TTRPGSystemJSONFormatting} from "../TTRPGSystemJSONFormatting.ts";
-import { 
-	GrobDerivedNode 
-} from "ttrpg-system-graph";
+import { JSONHandler } from "../../../JsonHandler";
+import { BASE_SCHEME } from "../../../JsonModuleConstants";
+import {TTRPG_SCHEMES, GrobJDerivedNode , TTRPGSystemJSONFormatting} from "../TTRPGSystemJSONFormatting";
 
 function setUpTests(){
 	let sys = new TTRPGSystemJSONFormatting();
@@ -154,22 +151,6 @@ test('Test that we can serialize every part of such a system ', () => {
  
 });
 
-test('Test what we get when deserializing', () => {
-
-	let sys = setUpTests();
-
-	// let ser = JSON.parse(JSONHandler.serialize(sys,'preview')); 
-	let c = sys.getDerivedCollection('Spell DC');
-	let n = sys.getDerivedNode('Spell DC', 'wisdom');
-	let ser = (JSONHandler.serialize(n));
- 
-	
-	let des : any ; 
-	des = JSONHandler.deserialize(GrobDerivedNode,ser)
-	//des = JSONHandler.deserialize(GrobCollection,ser)
-	//des = JSONHandler.deserialize(TTRPGSystem,ser)
-	 
-});
 
 test('MANUEL TEST: check that the PREVIEW json is stil korrekt', () => {
 

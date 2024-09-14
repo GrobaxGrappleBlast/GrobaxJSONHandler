@@ -57,7 +57,13 @@ export interface propertiesSpecialRecordArrayMapping<IN extends object,OUT exten
 export interface propertiesJsonObject {
 	scheme?:string[] | string ,
 	onBeforeSerialization?:(self:any) => any,
-	onAfterDeSerialization?: ( self:any ) => any
+	onBeforeDeSerialization?:(self:any) => any,
+
+
+	onAfterDeSerialization?: ( self:any ) => any,
+	onAfterSerialization?: ( self:any ) => any,
+	onAfterSerialization_beforeString?: ( self:any ) => any
+	
 }
 
 export interface JSONPropertyOptions {
@@ -322,11 +328,23 @@ export function JsonObject( option : propertiesJsonObject){
 		for (let i = 0; i < schemes.length; i++) {
 			const scheme = schemes[i];
 
+			// SERIALIZATION 
 			if(option.onAfterDeSerialization)
-				setOwnMetaData( JSON_TAGS.JSON_OBJECT_ON_AFTER_DE_SERIALIZATION	, target , option.onAfterDeSerialization , scheme);
+				setOwnMetaData( JSON_TAGS.JSON_OBJECT_ON_AFTER_DE_SERIALIZATION				, target , option.onAfterDeSerialization , scheme);
 
+			if(option.onAfterSerialization_beforeString)
+				setOwnMetaData( JSON_TAGS.JSON_OBJECT_ON_AFTER_SERIALIZATION_BEFORE_STRING	, target , option.onAfterSerialization_beforeString , scheme);
+
+			if(option.onAfterSerialization)
+				setOwnMetaData( JSON_TAGS.JSON_OBJECT_ON_AFTER_SERIALIZATION				, target , option.onAfterSerialization , scheme);
+
+
+			// DE SERIALIZATION 
 			if(option.onBeforeSerialization)
-				setOwnMetaData( JSON_TAGS.JSON_OBJECT_ON_BEFORE_SERIALIZATION	, target , option.onBeforeSerialization , scheme );
+				setOwnMetaData( JSON_TAGS.JSON_OBJECT_ON_BEFORE_SERIALIZATION		, target , option.onBeforeSerialization , scheme );
+
+			if(option.onBeforeDeSerialization)
+				setOwnMetaData( JSON_TAGS.JSON_OBJECT_ON_BEFORE_DE_SERIALIZATION	, target , option.onBeforeDeSerialization , scheme );
 
 		}
 	}

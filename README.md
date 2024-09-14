@@ -415,7 +415,33 @@ If there are child objects, the Handler will try to serialize them with the same
  <br><br>
 
 ### *@JsonString ( option )*  
- 
+
+### note if a string value contains " or \ 
+```js 
+	
+	class MyStringClass2 { 
+		@JsonString()
+		public data :any;
+	} 
+	test('Readme_StringExample', () => {
+
+		debugger
+		var obj = new MyStringClass2();
+		obj.data = { text : 'asdadsad " \\ \" '}	 
+	
+		let baseScheme = JSONHandler.serialize(obj);
+
+		console.log(`
+			baseScheme
+			**********
+			${baseScheme}
+		`);
+
+
+	})
+
+
+```
 <br><br>
 
 ### *@JsonBoolean ( option )*  

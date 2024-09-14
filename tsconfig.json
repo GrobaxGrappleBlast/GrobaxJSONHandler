@@ -21,6 +21,7 @@
         "types": ["jest","node"], 
 		"emitDeclarationOnly":false,
         "lib": [
+            "es2023",
             "dom",
             "ES5",
             "ES6",

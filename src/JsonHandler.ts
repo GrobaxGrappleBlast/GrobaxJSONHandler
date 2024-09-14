@@ -2,18 +2,23 @@ import type { IOutputHandler } from "./JsonModuleConstants";
 import { getMetadata, getOwnMetaData, getOwnMetaDataKeys, hasMetaDataInScheme , getMetaDataKeys, hasMetaData , getPrototype , setPrototype} from "./JsonModuleBaseFunction";
 import { BASE_SCHEME, JSON_BASETYPES, JSON_TAGS, NoOutput, type Constructor } from "./JsonModuleConstants";
 				 
-var counter_jsonhandler = 0;
 export class JSONHandler{
  
 	public static serialize(obj: any  , scheme : string = BASE_SCHEME ): string {
-		const o = JSONHandler.serializeRaw(obj, scheme );
-		return JSON.stringify(o);
+		var o = JSONHandler.serializeRaw(obj, scheme );
+		var str = JSON.stringify(o)
+	
+		// if there is an After serialize function get it and run it. 
+		let ObjectMeta  = getOwnMetaDataKeys(obj);  
+		if(ObjectMeta.includes(JSON_TAGS.JSON_OBJECT_ON_AFTER_SERIALIZATION)){
+			let f = getOwnMetaData(JSON_TAGS.JSON_OBJECT_ON_AFTER_SERIALIZATION,obj,scheme);
+			if(f)
+				str = f(str);
+		}
+
+		return str;
 	} 
 	private static serializeRaw( obj:any  , scheme : string = BASE_SCHEME , parentName = 'FIRST' ): object{
-
-
-		const prototypeDebug = Reflect.getPrototypeOf(obj);
-		
 		
 		if(!obj){
 			return obj;
@@ -23,6 +28,8 @@ export class JSONHandler{
 		const type =  typeof obj;
 		switch(type){
 			case 'string':
+				return JSONHandler.deserializeAndForceSimple('string',obj,scheme);
+			break
 			case 'boolean':
 			case 'number':
 				return obj;
@@ -96,9 +103,6 @@ export class JSONHandler{
 				}
 			}
 			
-			if( counter_jsonhandler > 100000000000 ){
-				console.log(prototypeDebug);
-			}
 
 			// if there is a mapping function
 			let out : any = null;
@@ -162,9 +166,14 @@ export class JSONHandler{
 			}  
 			result[PropertyName] = out;
 		}
-		if( counter_jsonhandler++ > 100000000000 ){
-			console.log(prototypeDebug);
+	
+		// if there is an After serialize function get it and run it. 
+		if(ObjectMeta.includes(JSON_TAGS.JSON_OBJECT_ON_AFTER_SERIALIZATION_BEFORE_STRING)){
+			let f = getOwnMetaData(JSON_TAGS.JSON_OBJECT_ON_AFTER_SERIALIZATION_BEFORE_STRING,obj,scheme);
+			if(f)
+				f(result);
 		}
+		
 		return result;
 	}
 
@@ -200,20 +209,29 @@ export class JSONHandler{
 				convFunc= (input) => Boolean(input);
 			break;
 			case JSON_BASETYPES.string:
+				
 				if(obj == null)
 					return "";
-				
-				if( Array.isArray(obj) ){
-					return JSON.stringify(obj);
+
+				if( typeof obj == 'string' ){
+					//const str = obj.replaceAll("<<dp>>",'\\"');
+					return obj;
+				}
+				else if( Array.isArray(obj) ){
+					let str = JSON.stringify(obj);
+					//str = str.replaceAll("<<dp>>",'\\"');
+					return str
 				}
 				else if(typeof obj == 'object'){ 
 					if(hasMetaData(obj,scheme)){
 						return JSONHandler.serialize( obj,scheme );
 					}else{
+						//let str = JSON.stringify(obj);
+						//str = str.replaceAll('\\"',"<<dp>>");
+						//return str
 						return JSON.stringify(obj);
 					} 
-				}
-
+				} 
 				convFunc = (input) => String(input);
 			break;
 			case JSON_BASETYPES.number:
@@ -343,5 +361,10 @@ export class JSONHandler{
 		}
 
 		return result;
+	}
+
+	public static changePrototype( target , source ){
+		const prototype = getPrototype(source);
+		setPrototype(target,prototype);
 	}
 }

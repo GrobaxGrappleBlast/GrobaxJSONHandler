@@ -1,11 +1,11 @@
  
-import { JSONHandler } from "../../../JsonHandler.ts"
+import { JSONHandler } from "../../../JsonHandler"
 import 
 {
 	GrobDerivedOrigin 
 } from "ttrpg-system-graph"; 
 import {type GrobNodeType } from "ttrpg-system-graph";
-import { TTRPGSystemJSONFormatting } from "../TTRPGSystemJSONFormatting.ts";
+import { TTRPGSystemJSONFormatting } from "../TTRPGSystemJSONFormatting";
 
 function setUpTests(){
 	let sys = new TTRPGSystemJSONFormatting();

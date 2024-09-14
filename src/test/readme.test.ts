@@ -11,7 +11,7 @@ class MyClass{
 	public b = "12"
 }
 
-const out = false;
+let out = false;
 
 test('Readme_Example_one', () => {
 
@@ -338,4 +338,40 @@ test('Readme_StringExample', () => {
 		**********
 		{"a":"2"} 
 	*/
+})
+
+
+
+class MyStringClass2 { 
+	@JsonString()
+	public data :any;
+} 
+test('Readme_StringExample 2', () => {
+
+	debugger
+	var obj = new MyStringClass2();
+	obj.data = { text : ' " \\ \" '}	 
+ 
+	let json = JSONHandler.serialize(obj);
+	
+	out = true;
+	if(out)
+		console.log(json);
+	/** prints out  
+		{"data":"{\"text\":\" <<dp>> \\\\ <<dp>> \"}"}
+	*/
+
+	let des = JSONHandler.deserialize(MyStringClass2,json);
+	if(out)
+		console.log(des);
+	/** prints out  
+		MyStringClass2 { data: '{"text":" \\" \\\\ \\" "}' } 
+	*/
+
+	if(out)
+		console.log(JSON.stringify(des));
+	/** prints out  
+		{"data":"{\"text\":\" \\\" \\\\ \\\" \"}"}
+	*/
+
 })

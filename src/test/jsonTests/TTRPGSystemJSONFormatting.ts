@@ -1,7 +1,7 @@
  
 import { GrobCollection , GrobGroup , type GrobNodeType , GrobDerivedNode, GrobDerivedOrigin, GrobFixedNode, TTRPGSystem , uuidv4 } from "ttrpg-system-graph";
-import { JsonObject, JsonMappingRecordInArrayOut, JsonClassTyped, JsonString, JsonNumber, JsonArrayClassTyped } 	from "../../Decorators.ts";
-import { BASE_SCHEME } from "../../JsonModuleConstants.ts";
+import { JsonObject, JsonMappingRecordInArrayOut, JsonClassTyped, JsonString, JsonNumber, JsonArrayClassTyped } 	from "../../Decorators";
+import { BASE_SCHEME } from "../../JsonModuleConstants";
  
 
 // if something is AGraphItem 

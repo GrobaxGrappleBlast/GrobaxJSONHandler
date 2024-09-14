@@ -1,4 +1,5 @@
-import { JSONHandler, JsonArrayBoolean, JsonArrayString, JsonBoolean, JsonClassTyped, JsonMapping, JsonMappingRecordInArrayOut, JsonNumber, JsonProperty, JsonString } from  "../index";
+import { JSONHandler, JsonArrayBoolean, JsonArrayClassTyped, JsonArrayString, JsonBoolean, JsonClassTyped, JsonMapping, JsonMappingRecordInArrayOut, JsonNumber, JsonProperty, JsonString } from  "../index";
+import { SheetData } from "./JsonString_objects";
 
 interface hasInit{
 	init()
@@ -155,9 +156,9 @@ export class StringContainer_object  implements hasInit {
 		this.simple = {name:"ornfreyd"};
 
 		//@ts-ignore
-		this.array = {name:"Jeffrey"};
-		this.simple2 =   new StringPiece();
-		this.array2 =	[new StringPiece()];
+		this.array	 = {name:"Jeffrey"};
+		this.simple2 = new StringPiece();
+		this.array2	 = [new StringPiece()];
 	}
 	public nulify(){	
 		this.simple	= null;
@@ -540,6 +541,7 @@ export class StringContainer_object  implements hasInit {
 
 */
 test('Simple object To string and string Array Conversions', () => {
+	debugger
 	let c = new StringContainer_object(); 
 	c.init();
 	var [orig, json, des ] = startTest( c , StringContainer_object );
@@ -565,14 +567,38 @@ test('Simple object To string and string Array Conversions', () => {
 	expect(des.array2.length).toBe(1);
 	for (let i = 0; i < 1; i++) {
 	
-		expect(
-			des.array [i]
-		).toBe(JSONHandler.serialize(orig.array)); 
+		let a = des.array [i];
+		let b = JSONHandler.serialize(orig.array);
+		expect(a).toEqual(b); 
 	
-		expect(
-			des.array2[i]
-		).toBe(JSONHandler.serialize(orig.array2[i])); 
+		a = des.array2[i];
+		b = JSONHandler.serialize(orig.array2[i]);
+		expect(a).toBe(b); 
 	}
-  
 })
 
+test('Test that Strings with are serialized correctly', () => {
+	
+	debugger
+	let S = new SheetData(null)
+	S.addRow();
+	S.data[0].addColumn();
+	//@ts-ignore
+	S.data[0].data[0].addItem()
+	//@ts-ignore
+	S.data[0].data[0].data[0].dataNN = { name : "Erik \" Sen ", v : " \"\\\" "}
+	
+	let json = JSONHandler.serialize(S);
+	console.log(json);
+	let obj = JSONHandler.deserialize(SheetData,json)
+	console.log(obj);
+
+
+
+})
+
+
+
+
+ 
+  

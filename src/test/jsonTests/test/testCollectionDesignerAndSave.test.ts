@@ -1,7 +1,7 @@
 import { type GrobNodeType } from "ttrpg-system-graph";
-import { DerivedCollectionController} from './DerivedCollectionController.ts';   
-import { JSONHandler } from "../../../JsonHandler.ts"
-import { TTRPGSystemJSONFormatting } from "../TTRPGSystemJSONFormatting.ts";
+import { DerivedCollectionController} from './DerivedCollectionController';   
+import { JSONHandler } from "../../../JsonHandler"
+import { TTRPGSystemJSONFormatting } from "../TTRPGSystemJSONFormatting";
 
 const selAllInCollectionString = '- - Select all - -';
 
