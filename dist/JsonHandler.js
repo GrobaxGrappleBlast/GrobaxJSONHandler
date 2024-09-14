@@ -74,7 +74,11 @@ var JSONHandler = /** @class */ (function () {
             // if the item is typed, then we excange the prototypes for each object as we deserialize. 
             // we do this in a funciton to minimize if statement chaos;
             var typedconversion = function (v, ser) { return v; };
-            if (meta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_TYPED)) {
+            var skipForceType = false;
+            if (meta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_TYPED_SKIP_FORCED)) {
+                skipForceType = (0, JsonModuleBaseFunction_1.getMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_TYPED_SKIP_FORCED, obj, key, scheme);
+            }
+            if (meta.includes(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_TYPED) && !skipForceType) {
                 typedconversion = function (v, ser) {
                     // get prototypes;
                     var during = ((0, JsonModuleBaseFunction_1.getMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_TYPED, obj, key, scheme)).prototype;
@@ -100,7 +104,6 @@ var JSONHandler = /** @class */ (function () {
                     if (Array.isArray(obj[key])) {
                         var _loop_2 = function (j) {
                             var e = typedconversion(obj[key][j], function (o) { return JSONHandler.serializeRaw(o, scheme, parentName + ':[' + j + ']:' + key); });
-                            //const e = JSONHandler.serializeRaw( obj[key][j] , scheme );
                             out.push(e);
                         };
                         for (var j = 0; j < obj[key].length; j++) {

@@ -35,18 +35,26 @@ var Reflect = /** @class */ (function () {
     };
     Reflect.getOrCreateAllMetaData = function (obj, create) {
         if (create === void 0) { create = false; }
-        var a = Reflect.getPrototype(obj);
-        if (a === Object.prototype) {
+        var prototype = Reflect.getPrototype(obj);
+        if (prototype === Object.prototype) {
             return null;
         }
-        if (a == null)
+        if (prototype == null)
             return null;
+        var a = prototype;
         if (!(a['gjmd'])) {
             if (!create)
                 return null;
             a['gjmd'] = {};
         }
-        return a['gjmd'];
+        a = a['gjmd'];
+        if (!a[prototype.constructor.name]) {
+            if (!create)
+                return null;
+            a[prototype.constructor.name] = {};
+        }
+        a = a[prototype.constructor.name];
+        return a;
     };
     Reflect.getOrCreateDefinedMetaData = function (obj, scheme, create) {
         if (create === void 0) { create = false; }

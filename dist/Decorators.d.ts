@@ -45,6 +45,8 @@ export interface JSONPropertyOptions {
     name?: string;
     /**if this should be forced to an array */
     isArray?: boolean;
+    /** skip any forcing of types when serializing */
+    skipForceType?: boolean;
 }
 /**
  * This is the base property, this is the property that other properties use.

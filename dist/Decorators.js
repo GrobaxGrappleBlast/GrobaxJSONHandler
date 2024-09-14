@@ -75,6 +75,9 @@ function JsonProperty(option) {
             if (option.type) {
                 (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_TYPED, option.type, target, propertyKey, scheme);
             }
+            if (option.skipForceType) {
+                (0, JsonModuleBaseFunction_1.setMetadata)(JsonModuleConstants_1.JSON_TAGS.JSON_PROPERTY_TYPED_SKIP_FORCED, true, target, propertyKey, scheme);
+            }
         }
     };
 }
