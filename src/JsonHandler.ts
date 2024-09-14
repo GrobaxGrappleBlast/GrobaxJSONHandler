@@ -262,6 +262,20 @@ export class JSONHandler{
 		// serializedObject is a new object, without non Jsonproperties
 		let result = new target();
 		let prototype = target.prototype;
+
+		// EVENT ON AFTER DESERIALIZE
+		let ObjectMeta  = getOwnMetaDataKeys(target); 
+		if(ObjectMeta.includes(JSON_TAGS.JSON_OBJECT_ON_BEFORE_DE_SERIALIZATION)){
+			// get meta data function and run it on the resulting object
+			let f = getOwnMetaData(JSON_TAGS.JSON_OBJECT_ON_BEFORE_DE_SERIALIZATION,result,scheme); 
+			if(f)
+				result = f(result);
+
+			// incase the Before has changed the type 
+			if(!JSONHandler.areSamePrototypes(result,target)){
+				target = getPrototype(result).constructor;
+			}
+		}
  
 		// get propertynames and loop through 
 		let propertyNames = Object.getOwnPropertyNames( obj );
@@ -350,7 +364,7 @@ export class JSONHandler{
 		}
  
 		// EVENT ON AFTER DESERIALIZE
-		let ObjectMeta  = getOwnMetaDataKeys(result); 
+		ObjectMeta  = getOwnMetaDataKeys(result); 
  
 		// if there is an After serialize function get it and run it. 
 		if(ObjectMeta.includes(JSON_TAGS.JSON_OBJECT_ON_AFTER_DE_SERIALIZATION)){
@@ -366,5 +380,11 @@ export class JSONHandler{
 	public static changePrototype( target , source ){
 		const prototype = getPrototype(source);
 		setPrototype(target,prototype);
+	}
+
+	public static areSamePrototypes( target , source ){
+		const prototype1 = getPrototype(source);
+		const prototype2 = getPrototype(target);
+		return prototype1 == prototype2;
 	}
 }

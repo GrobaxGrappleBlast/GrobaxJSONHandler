@@ -46,7 +46,7 @@ test('Events at Serialization Tests', () => {
 		
 	},
 	onBeforeDeSerialization	: ( self : any )=>{
-		JSONHandler.changePrototype(self,DeSerialTestObj2)
+		return new DeSerialTestObj2();
 	}
 })
 export class DeSerialTestObj {
@@ -63,6 +63,8 @@ export class DeSerialTestObj2 {
 
 	@JsonNumber({name:'varNum'})
 	public varNum2 = 1;
+
+	public TESTVAR = 1231321312;
 }
 
 
@@ -70,11 +72,13 @@ test('Events at DESerialization Tests', () => {
 
 	let c = new DeSerialTestObj();
 	let json = JSONHandler.serialize(c);
-	let obj = JSONHandler.deserialize(DeSerialTestObj,c) as DeSerialTestObj2; 
+	let obj = JSONHandler.deserialize(DeSerialTestObj,json) as DeSerialTestObj2; 
 
-	debugger
-
-	console.log(obj);
+	expect(obj['varString']).toBe(undefined);
+	expect(obj['varNum'])	.toBe(undefined);
+	expect(obj['varString2'])	.toBe('@1');
+	expect(obj['varNum2'])		.toBe(1);
+	expect(obj['TESTVAR'])		.toBe(1231321312);
 
 
 })
