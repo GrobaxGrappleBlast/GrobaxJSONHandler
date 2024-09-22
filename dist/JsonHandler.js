@@ -162,7 +162,15 @@ var JSONHandler = /** @class */ (function () {
                 writeOut.outError('Cannot derserialize type of ' + type);
                 return;
         }
-        return this.deserializeRaw(target, json, scheme);
+        if (Array.isArray(json)) {
+            var arr = [];
+            for (var i = 0; i < json.length; i++) {
+                this.deserializeRaw(target, json[i], scheme);
+            }
+        }
+        else {
+            return this.deserializeRaw(target, json, scheme);
+        }
     };
     JSONHandler.deserializeAndForceSimple = function (typekey, obj, scheme) {
         if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
