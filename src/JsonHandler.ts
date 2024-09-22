@@ -199,7 +199,15 @@ export class JSONHandler{
 				return;
 		}
 
-		return this.deserializeRaw(target,json , scheme );
+		
+		if (Array.isArray(json)){
+			let arr = [];
+			for (let i = 0; i < json.length; i++) {
+				this.deserializeRaw(target,json[i] , scheme );
+			}
+		}else{
+			return this.deserializeRaw(target,json , scheme );
+		}	
 	} 
 
 	private static deserializeAndForceSimple( typekey , obj , scheme : string = BASE_SCHEME ){
