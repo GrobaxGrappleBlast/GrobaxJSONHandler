@@ -165,8 +165,9 @@ var JSONHandler = /** @class */ (function () {
         if (Array.isArray(json)) {
             var arr = [];
             for (var i = 0; i < json.length; i++) {
-                this.deserializeRaw(target, json[i], scheme);
+                arr.push(this.deserializeRaw(target, json[i], scheme));
             }
+            return arr;
         }
         else {
             return this.deserializeRaw(target, json, scheme);

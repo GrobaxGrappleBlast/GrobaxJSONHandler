@@ -201,10 +201,12 @@ export class JSONHandler{
 
 		
 		if (Array.isArray(json)){
-			let arr = [];
+			let arr : any[] = [];
 			for (let i = 0; i < json.length; i++) {
-				this.deserializeRaw(target,json[i] , scheme );
+				arr.push(this.deserializeRaw(target,json[i] , scheme ));
 			}
+			return arr;
+
 		}else{
 			return this.deserializeRaw(target,json , scheme );
 		}	
