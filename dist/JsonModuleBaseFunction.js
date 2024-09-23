@@ -1,20 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.hasMetaDataInScheme = hasMetaDataInScheme;
-exports.getMetadata = getMetadata;
-exports.getOwnMetaData = getOwnMetaData;
-exports.setMetadata = setMetadata;
-exports.setOwnMetaData = setOwnMetaData;
-exports.getOwnMetaDataKeys = getOwnMetaDataKeys;
-exports.getMetaDataKeys = getMetaDataKeys;
-exports.hasMetaData = hasMetaData;
-exports.getPrototype = getPrototype;
-exports.setPrototype = setPrototype;
-var JsonModuleConstants_1 = require("./JsonModuleConstants");
-var Reflect_1 = require("./Reflect");
-function hasMetaDataInScheme(metaTag, target, propertyKey, scheme) {
+import { BASE_SCHEME } from "./JsonModuleConstants";
+import { Reflect } from "./Reflect";
+export function hasMetaDataInScheme(metaTag, target, propertyKey, scheme) {
     try {
-        var data = Reflect_1.Reflect.getMetadata(metaTag, target, propertyKey);
+        var data = Reflect.getMetadata(metaTag, target, propertyKey);
         if (data[scheme] != undefined)
             return true;
         return false;
@@ -24,44 +12,44 @@ function hasMetaDataInScheme(metaTag, target, propertyKey, scheme) {
     }
 }
 // GET --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
-function getMetadata(metaTag, target, propertyKey, scheme) {
-    if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
-    return Reflect_1.Reflect.getMetadata(metaTag, target, propertyKey, scheme);
+export function getMetadata(metaTag, target, propertyKey, scheme) {
+    if (scheme === void 0) { scheme = BASE_SCHEME; }
+    return Reflect.getMetadata(metaTag, target, propertyKey, scheme);
 }
-function getOwnMetaData(metaTag, target, scheme) {
-    if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
-    return Reflect_1.Reflect.getOwnMetaData(metaTag, target, scheme);
+export function getOwnMetaData(metaTag, target, scheme) {
+    if (scheme === void 0) { scheme = BASE_SCHEME; }
+    return Reflect.getOwnMetaData(metaTag, target, scheme);
 }
 // DEFINE --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
-function setMetadata(metaTag, value, target, propertyKey, scheme) {
-    if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
-    Reflect_1.Reflect.defineMetaData(metaTag, value, target, propertyKey, scheme);
+export function setMetadata(metaTag, value, target, propertyKey, scheme) {
+    if (scheme === void 0) { scheme = BASE_SCHEME; }
+    Reflect.defineMetaData(metaTag, value, target, propertyKey, scheme);
 }
-function setOwnMetaData(metaTag, target, value, scheme) {
-    if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
-    Reflect_1.Reflect.defineOwnMetaData(metaTag, value, target, scheme);
+export function setOwnMetaData(metaTag, target, value, scheme) {
+    if (scheme === void 0) { scheme = BASE_SCHEME; }
+    Reflect.defineOwnMetaData(metaTag, value, target, scheme);
 }
 // KEYS --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
-function getOwnMetaDataKeys(target, scheme) {
-    if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
-    var keys = Reflect_1.Reflect.getOwnMetaDataKeys(target, scheme);
+export function getOwnMetaDataKeys(target, scheme) {
+    if (scheme === void 0) { scheme = BASE_SCHEME; }
+    var keys = Reflect.getOwnMetaDataKeys(target, scheme);
     return keys;
 }
-function getMetaDataKeys(target, key, scheme) {
-    if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
-    var keys = Reflect_1.Reflect.getMetadataKeys(target, key, scheme);
+export function getMetaDataKeys(target, key, scheme) {
+    if (scheme === void 0) { scheme = BASE_SCHEME; }
+    var keys = Reflect.getMetadataKeys(target, key, scheme);
     return keys;
 }
-function hasMetaData(target, scheme) {
-    var a = Reflect_1.Reflect.getAllMeta(target, scheme);
+export function hasMetaData(target, scheme) {
+    var a = Reflect.getAllMeta(target, scheme);
     if (!a)
         return false;
     return true;
 }
-function getPrototype(obj) {
-    return Reflect_1.Reflect.getPrototype(obj);
+export function getPrototype(obj) {
+    return Reflect.getPrototype(obj);
 }
-function setPrototype(obj, prototype) {
-    Reflect_1.Reflect.setPrototype(obj, prototype);
-    return Reflect_1.Reflect.getPrototype(obj) == prototype;
+export function setPrototype(obj, prototype) {
+    Reflect.setPrototype(obj, prototype);
+    return Reflect.getPrototype(obj) == prototype;
 }

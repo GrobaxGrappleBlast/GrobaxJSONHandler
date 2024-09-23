@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Reflect = void 0;
-var JsonModuleConstants_1 = require("./JsonModuleConstants");
+import { BASE_SCHEME } from "./JsonModuleConstants";
 function createGuid() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
         .replace(/[xy]/g, function (c) {
@@ -70,7 +67,7 @@ var Reflect = /** @class */ (function () {
     };
     // KEYS --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     Reflect.getMetadataKeys = function (obj, key, scheme) {
-        if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
+        if (scheme === void 0) { scheme = BASE_SCHEME; }
         var a = Reflect.getOrCreateDefinedMetaData(obj, scheme);
         if (!a || !a[key]) {
             return [];
@@ -78,38 +75,38 @@ var Reflect = /** @class */ (function () {
         return Object.keys(a[key]);
     };
     Reflect.getOwnMetaDataKeys = function (obj, scheme) {
-        if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
+        if (scheme === void 0) { scheme = BASE_SCHEME; }
         return Reflect.getMetadataKeys(obj, selfKey, scheme);
     };
     // GET --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     Reflect.getMetadata = function (metaTag, target, propertyKey, scheme) {
         var _a;
-        if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
+        if (scheme === void 0) { scheme = BASE_SCHEME; }
         var a = Reflect.getOrCreateDefinedMetaData(target, scheme);
         if (!a[propertyKey])
             return null;
         return (_a = a[propertyKey][metaTag]) !== null && _a !== void 0 ? _a : null;
     };
     Reflect.getOwnMetaData = function (metaTag, target, scheme) {
-        if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
+        if (scheme === void 0) { scheme = BASE_SCHEME; }
         return Reflect.getMetadata(metaTag, target, selfKey, scheme);
     };
     // DEFINE --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     Reflect.defineMetaData = function (metaTag, data, target, propertyKey, scheme) {
-        if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
+        if (scheme === void 0) { scheme = BASE_SCHEME; }
         var a = Reflect.getOrCreateDefinedMetaData(target, scheme, true);
         if (!a[propertyKey])
             a[propertyKey] = {};
         a[propertyKey][metaTag] = data;
     };
     Reflect.defineOwnMetaData = function (metaTag, data, target, scheme) {
-        if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
+        if (scheme === void 0) { scheme = BASE_SCHEME; }
         return Reflect.defineMetaData(metaTag, data, target, selfKey, scheme);
     };
     // has --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     Reflect.hasMetaData = function (metaTag, target, key, scheme) {
         var _a;
-        if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
+        if (scheme === void 0) { scheme = BASE_SCHEME; }
         var a = Reflect.getOrCreateDefinedMetaData(target, scheme);
         if (a == null)
             return false;
@@ -118,7 +115,7 @@ var Reflect = /** @class */ (function () {
         return (_a = a[key][metaTag]) !== null && _a !== void 0 ? _a : false;
     };
     Reflect.hasOwnMetaData = function (metaTag, target, scheme) {
-        if (scheme === void 0) { scheme = JsonModuleConstants_1.BASE_SCHEME; }
+        if (scheme === void 0) { scheme = BASE_SCHEME; }
         return Reflect.hasMetaData(metaTag, target, selfKey, scheme);
     };
     Reflect.getAllMeta = function (obj, scheme) {
@@ -131,4 +128,4 @@ var Reflect = /** @class */ (function () {
     };
     return Reflect;
 }());
-exports.Reflect = Reflect;
+export { Reflect };

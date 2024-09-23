@@ -7,7 +7,7 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "baseUrl": "./",    
-        "module": "commonjs",
+        "module": "ESNext",
         "target": "ES5",
         "verbatimModuleSyntax":false,
         "allowJs": true,
