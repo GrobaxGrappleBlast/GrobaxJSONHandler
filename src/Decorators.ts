@@ -9,7 +9,7 @@ function cleanNonAccesibleSettings( option?:JSONPropertyOptions ){
 	if(!option.scheme || option.scheme.length == 0)
 		option.scheme = [BASE_SCHEME];
 
-	(option as any).mappingFunctions	= null;
+	//(option as any).mappingFunctions	= null;
 	(option as any).type 				= null;
 	(option as any).isArray				= null;
 	(option as any).forceBaseType		= null;
@@ -69,6 +69,10 @@ export interface propertiesJsonObject {
 }
 
 export interface JSONPropertyOptions {
+
+	/**method to run on out and in. */
+	mappingFunctions? :{ out:( t:any , serialize?:any ) => any , in:( b:any, deserialize?:any ) => any } , 
+
 	/**what scheme this property belongs to */
 	scheme?:string[] | string , 
 	
