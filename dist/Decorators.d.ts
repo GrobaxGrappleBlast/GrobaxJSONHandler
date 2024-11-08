@@ -39,6 +39,11 @@ export interface propertiesJsonObject {
     onAfterSerialization_beforeString?: (self: any) => any;
 }
 export interface JSONPropertyOptions {
+    /**method to run on out and in. */
+    mappingFunctions?: {
+        out: (t: any, serialize?: any) => any;
+        in: (b: any, deserialize?: any) => any;
+    };
     /**what scheme this property belongs to */
     scheme?: string[] | string;
     /** what name its going out as and coming in as */

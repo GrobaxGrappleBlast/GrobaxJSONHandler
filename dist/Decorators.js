@@ -20,7 +20,7 @@ function cleanNonAccesibleSettings(option) {
         return {};
     if (!option.scheme || option.scheme.length == 0)
         option.scheme = [JsonModuleConstants_1.BASE_SCHEME];
-    option.mappingFunctions = null;
+    //(option as any).mappingFunctions	= null;
     option.type = null;
     option.isArray = null;
     option.forceBaseType = null;
