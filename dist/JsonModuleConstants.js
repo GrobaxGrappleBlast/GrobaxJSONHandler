@@ -1,12 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.JSON_BASETYPES = exports.JSON_TAGS = exports.NoOutput = exports.BASE_SCHEME = void 0;
-exports.BASE_SCHEME = '_base';
-exports.NoOutput = {
+export const BASE_SCHEME = '_base';
+export const NoOutput = {
     outError(msg) { },
     outLog(msg) { }
 };
-var JSON_TAGS;
+export var JSON_TAGS;
 (function (JSON_TAGS) {
     JSON_TAGS["JSON_PROPERTY"] = "JSON_PROPERTY";
     JSON_TAGS["JSON_PROPERTY_TYPED"] = "JSON_PROPERTY_TYPED";
@@ -22,10 +19,10 @@ var JSON_TAGS;
     JSON_TAGS["JSON_OBJECT_ON_AFTER_SERIALIZATION"] = "JSON_OBJECT_ON_AFTER_SERIALIZATION";
     JSON_TAGS["JSON_OBJECT_ON_BEFORE_SERIALIZATION"] = "JSON_OBJECT_ON_BEFORE_SERIALIZATION";
     JSON_TAGS["JSON_OBJECT_ON_BEFORE_DE_SERIALIZATION"] = "JSON_OBJECT_ON_BEFORE_DE_SERIALIZATION";
-})(JSON_TAGS || (exports.JSON_TAGS = JSON_TAGS = {}));
-var JSON_BASETYPES;
+})(JSON_TAGS || (JSON_TAGS = {}));
+export var JSON_BASETYPES;
 (function (JSON_BASETYPES) {
     JSON_BASETYPES["string"] = "string";
     JSON_BASETYPES["bool"] = "bool";
     JSON_BASETYPES["number"] = "number";
-})(JSON_BASETYPES || (exports.JSON_BASETYPES = JSON_BASETYPES = {}));
+})(JSON_BASETYPES || (JSON_BASETYPES = {}));
